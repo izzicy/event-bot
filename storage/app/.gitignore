@@ -1,0 +1,5 @@
+*
+!public/
+!choose-your-door/
+!choose-your-door/**/*
+!.gitignore
