@@ -17,6 +17,16 @@ class ConqueredTile extends Model
     protected $table = 'multiplayer_minesweeper_conquests';
 
     /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'x_coord' => 'int',
+        'y_coord' => 'int',
+    ];
+
+    /**
      * Scope to only include tiles with the given user.
      *
      * @param Builder $query
