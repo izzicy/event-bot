@@ -72,7 +72,7 @@ class ChooseYourDoorRespondCommand extends Command
                 try {
                     $users = collect($choices->getUsers());
 
-                    $channelId= '811689892038836247';
+                    // $channelId= '811689892038836247';
 
                     $doorCount = $this->option('door-count');
 
