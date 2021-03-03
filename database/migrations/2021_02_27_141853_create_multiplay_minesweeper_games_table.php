@@ -16,6 +16,7 @@ class CreateMultiplayMinesweeperGamesTable extends Migration
         Schema::create('multiplay_minesweeper_games', function (Blueprint $table) {
             $table->bigIncrements('id');
 
+            $table->boolean('initialized')->default(0);
             $table->bigInteger('grid_id');
 
             $table->timestamps();
