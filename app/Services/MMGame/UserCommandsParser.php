@@ -110,6 +110,29 @@ class UserCommandsParser
             }
         }
 
-        return $userTilePicks;
+        return $this->filterDuplicatePicks($userTilePicks);
+    }
+
+    /**
+     * Filter out the duplicate picks.
+     *
+     * @param UserTilePicksCollection $collection
+     * @return UserTilePicksCollection
+     */
+    protected function filterDuplicatePicks(UserTilePicksCollection $collection)
+    {
+        $chosenTiles = collect();
+
+        return $collection->filter(function($pick) use ($chosenTiles) {
+            $coords = $pick->getX() . ':' . $pick->getY();
+
+            if ($chosenTiles->has($coords)) {
+                return false;
+            }
+
+            $chosenTiles->put($coords, true);
+
+            return true;
+        });
     }
 }
