@@ -7,6 +7,7 @@ use App\Services\BillyGame\VoteEmojiInterpreter;
 use App\Services\BillyGame\VotesInterpreter;
 use App\Services\Pipeline\PipelineFactory;
 use App\Services\Pipeline\PromisePipeline;
+use App\Services\Users\UserModelRepository;
 use EmojiView;
 use Illuminate\Support\ServiceProvider;
 
@@ -26,6 +27,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(PromisePipeline::class, function($app) {
             return new PromisePipeline($app);
         });
+        $this->app->singleton(UserModelRepository::class);
     }
 
     /**
