@@ -17,7 +17,7 @@ class DoorImageCreator
     {
         $background = Image::make(storage_path('app/choose-your-door/background.png'));
         $doorImage = Image::make(storage_path('app/choose-your-door/door.png'));
-        $offsetY = 38;
+        $offsetY = 74;
 
         $backgroundHeight = $background->getHeight();
         $backgroundWidth = $background->getWidth();
