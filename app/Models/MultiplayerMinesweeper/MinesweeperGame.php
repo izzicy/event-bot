@@ -19,6 +19,34 @@ class MinesweeperGame extends Model implements PickableRepositoryInterface
     protected $table = 'multiplay_minesweeper_games';
 
     /**
+     * Create a new game.
+     *
+     * @param int $width
+     * @param int $height
+     * @return self
+     */
+    public static function createNewGame($width, $height)
+    {
+        $grid = new StateGrid();
+
+        $grid->setDimensions($width, $height);
+
+        foreach (range(0, $width - 1) as $x) {
+            foreach (range(0, $height - 1) as $y) {
+                $grid->setStateAt($x, $y, 'empty');
+            }
+        }
+
+        $grid->save();
+
+        $game = self::forceCreate([
+            'grid_id' => $grid->getKey(),
+        ]);
+
+        return $game;
+    }
+
+    /**
      * @inheritdoc
      */
     public function isPickable($tileX, $tileY, ?UserInterface $user)
