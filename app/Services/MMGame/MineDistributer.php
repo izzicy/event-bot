@@ -34,6 +34,14 @@ class MineDistributer
             } while ($placed === false);
         }
 
+        foreach (range(0, $width - 1) as $x) {
+            foreach (range(0, $height - 1) as $y) {
+                if ($grid->getStateAt($x, $y) !== 'mine') {
+                    $grid->setStateAt($x, $y, 'empty');
+                }
+            }
+        }
+
         return $this;
     }
 }
