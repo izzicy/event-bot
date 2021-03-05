@@ -17,7 +17,7 @@ class ChooseYourDoorPostChoiceBoothCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'choose-your-door:post-choice-booth {--channel=} {--door-count=4}';
+    protected $signature = 'choose-your-door:post-choice-booth {--channel=} {--door-count=4} {--test}';
 
     /**
      * The console command description.
@@ -52,6 +52,11 @@ class ChooseYourDoorPostChoiceBoothCommand extends Command
 
             function($passable, $next) use ($discord) {
                 $channelId = $this->option('channel') ?? config('choose-your-door-game.default-channel');
+
+                if ($this->option('test') === true) {
+                    $channelId = config('choose-your-door-game.test-channel');
+                }
+
                 $doorCount = $this->option('door-count');
                 $discordConnection = new DiscordConnection();
 

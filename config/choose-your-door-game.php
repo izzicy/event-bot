@@ -2,6 +2,7 @@
 
 return [
     'default-channel' => env('CHOOSE_YOUR_DOOR_DEFAULT_CHANNEL'),
+    'test-channel' => env('CHOOSE_YOUR_DOOR_TEST_CHANNEL'),
 
     'phrases-file' => storage_path('app/choose-your-door/phrases.json'),
 

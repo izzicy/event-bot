@@ -22,7 +22,7 @@ class ChooseYourDoorRespondCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'choose-your-door:respond {--channel=} {--message=} {--door-count=4} {--correct-doors=2}';
+    protected $signature = 'choose-your-door:respond {--channel=} {--message=} {--door-count=4} {--correct-doors=2} {--test}';
 
     /**
      * The console command description.
@@ -72,7 +72,9 @@ class ChooseYourDoorRespondCommand extends Command
                 try {
                     $users = collect($choices->getUsers());
 
-                    $channelId= '811689892038836247';
+                    if ($this->option('test') === true) {
+                        $channelId = config('choose-your-door-game.test-channel');
+                    }
 
                     $doorCount = $this->option('door-count');
 
