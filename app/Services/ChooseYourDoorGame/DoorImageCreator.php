@@ -24,7 +24,7 @@ class DoorImageCreator
 
         $ratio = $doorImage->getWidth() / $doorImage->getHeight();
 
-        $doorHeight = round($backgroundHeight * 0.5);
+        $doorHeight = round($backgroundHeight * 0.3);
         $doorWidth = round($ratio * $doorHeight);
         $doorImage->resize($doorWidth, $doorHeight);
 
