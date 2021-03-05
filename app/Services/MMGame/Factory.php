@@ -2,7 +2,9 @@
 
 namespace App\Services\MMGame;
 
+use App\Services\MMGame\Conquerers\Conquerer;
 use App\Services\MMGame\Contracts\PickableRepositoryInterface;
+use App\Services\StateGrid\StateGridInterface;
 use App\Services\Users\DiscordUser;
 use App\Services\Users\UserInterface;
 use Discord\Parts\Channel\Message;
@@ -57,5 +59,18 @@ class Factory
     public function createUserTilePicksCollection(array $userTilePicks = [])
     {
         return new UserTilePicksCollection($userTilePicks);
+    }
+
+    /**
+     * Create the conquerer.
+     *
+     * @param PickableRepositoryInterface $pickableRepository
+     * @param StateGridInterface $grid
+     * @param UserTilePicksCollection $picks
+     * @return Conquerer
+     */
+    public function createConquerer(PickableRepositoryInterface $pickableRepository, StateGridInterface $grid, UserTilePicksCollection $picks)
+    {
+        return new Conquerer($this, $pickableRepository, $grid, $picks);
     }
 }
