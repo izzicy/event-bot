@@ -2,7 +2,7 @@
 
 namespace App\Services\MMGame;
 
-use Discord\Helpers\Collection;
+use Illuminate\Support\Collection;
 
 class UserTilePicksCollection extends Collection
 {
