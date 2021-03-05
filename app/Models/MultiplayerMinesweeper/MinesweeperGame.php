@@ -51,6 +51,14 @@ class MinesweeperGame extends Model implements PickableRepositoryInterface
      */
     public function isPickable($tileX, $tileY, ?UserInterface $user)
     {
+        if ($tileX < 0 || $tileX >= $this->grid->getWidth()) {
+            return false;
+        }
+
+        if ($tileY < 0 || $tileY >= $this->grid->getHeight()) {
+            return false;
+        }
+
         return $this->conquered->filter(function($conquered) use ($tileX, $tileY) {
             return $conquered->x_coord === $tileX || $conquered->y_coord === $tileY;
         })->count() > 0;
