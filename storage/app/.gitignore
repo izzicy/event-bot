@@ -2,4 +2,6 @@
 !public/
 !choose-your-door/
 !choose-your-door/**/*
+!mmg/
+!mmg/**/*
 !.gitignore
