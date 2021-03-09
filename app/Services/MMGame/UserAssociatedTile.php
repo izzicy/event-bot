@@ -2,9 +2,10 @@
 
 namespace App\Services\MMGame;
 
+use App\Services\MMGame\Contracts\UserAssociatedTileInterface;
 use App\Services\Users\UserInterface;
 
-class UserTilePick
+class UserAssociatedTile implements UserAssociatedTileInterface
 {
     protected $user;
     protected $tileX;
@@ -29,7 +30,7 @@ class UserTilePick
      *
      * @return UserInterface
      */
-    public function getUser()
+    public function getUser(): UserInterface
     {
         return $this->user;
     }

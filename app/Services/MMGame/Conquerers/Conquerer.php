@@ -3,8 +3,8 @@
 namespace App\Services\MMGame\Conquerers;
 
 use App\Services\MMGame\Contracts\PickableRepositoryInterface;
+use App\Services\MMGame\Contracts\UserAssocTilesCollectionInterface;
 use App\Services\MMGame\Factory;
-use App\Services\MMGame\UserTilePicksCollection;
 use App\Services\StateGrid\StateGridInterface;
 use App\Services\Users\UserInterface;
 use Illuminate\Support\Collection;
@@ -35,7 +35,7 @@ class Conquerer
     /**
      * The user picks collection.
      *
-     * @var UserTilePicksCollection
+     * @var UserAssocTilesCollectionInterface
      */
     protected $picks;
 
@@ -57,9 +57,9 @@ class Conquerer
      * @param Factory $factory
      * @param PickableRepositoryInterface $pickableRepository
      * @param StateGridInterface $grid
-     * @param UserTilePicksCollection $picks
+     * @param UserAssocTilesCollectionInterface $picks
      */
-    public function __construct(Factory $factory, PickableRepositoryInterface $pickableRepository, StateGridInterface $grid, UserTilePicksCollection $picks)
+    public function __construct(Factory $factory, PickableRepositoryInterface $pickableRepository, StateGridInterface $grid, UserAssocTilesCollectionInterface $picks)
     {
         $this->pickableRepository = $pickableRepository;
         $this->grid = $grid;
@@ -83,23 +83,26 @@ class Conquerer
     /**
      * Get the conquered picks.
      *
-     * @return UserTilePicksCollection
+     * @return UserAssocTilesCollectionInterface
      */
     public function getConqueredPicks()
     {
-        $extraPicks = $this->factory->createUserTilePicksCollection();
+        $extraPicks = collect();
 
         foreach ($this->discovered as $x => $rows) {
             foreach ($rows as $y => $user) {
-                if ($this->picks->isPicked($x, $y) === false) {
+                if ($this->picks->hasTileAt($x, $y) === false) {
                     $extraPicks->push(
-                        $this->factory->createUserTilePick($user, $x, $y)
+                        $this->factory->createUserAssociatedTile($user, $x, $y)
                     );
                 }
             }
         }
 
-        return $extraPicks->merge($this->picks);
+        return $this->factory->createAggreateAssocTileCollection([
+            $this->picks,
+            $this->factory->createAssocTileCollection($extraPicks->all()),
+        ]);
     }
 
     /**

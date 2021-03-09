@@ -22,24 +22,6 @@ class CreateMultiplayMinesweeperGamesTable extends Migration
             $table->timestamps();
         });
 
-        Schema::create('multiplay_minesweeper_game_user', function (Blueprint $table) {
-            $table->integer('user_id');
-
-            $table->integer('game_id');
-
-            $table->primary(['game_id', 'user_id'], 'minesweeper_game_has_users');
-
-            $table->foreign('user_id')
-                ->references('id')
-                ->on('discord_users')
-                ->onDelete('cascade');
-
-            $table->foreign('game_id')
-                ->references('id')
-                ->on('multiplay_minesweeper_games')
-                ->onDelete('cascade');
-        });
-
         Schema::create('multiplayer_minesweeper_conquests', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('user_id');
@@ -49,7 +31,6 @@ class CreateMultiplayMinesweeperGamesTable extends Migration
 
             $table->unique(['game_id', 'user_id', 'x_coord', 'y_coord'], 'minesweeper_conquest_index');
         });
-
     }
 
     /**

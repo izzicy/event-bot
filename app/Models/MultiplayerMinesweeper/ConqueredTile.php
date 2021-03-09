@@ -3,11 +3,13 @@
 namespace App\Models\MultiplayerMinesweeper;
 
 use App\Models\DiscordUser;
+use App\Services\MMGame\Contracts\UserAssociatedTileInterface;
+use App\Services\Users\UserInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class ConqueredTile extends Model
+class ConqueredTile extends Model implements UserAssociatedTileInterface
 {
     /**
      * The table associated with the model.
@@ -25,6 +27,30 @@ class ConqueredTile extends Model
         'x_coord' => 'int',
         'y_coord' => 'int',
     ];
+
+    /**
+     * @inheritdoc
+     */
+    public function getUser(): UserInterface
+    {
+        return $this->user;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getX()
+    {
+        return $this->x_coord;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getY()
+    {
+        return $this->y_coord;
+    }
 
     /**
      * Scope to only include tiles with the given user.

@@ -3,7 +3,9 @@
 namespace App\Services\MMGame;
 
 use App\Services\MMGame\Contracts\PickableRepositoryInterface;
+use App\Services\MMGame\Contracts\UserAssocTilesCollectionInterface;
 use App\Services\Users\UserInterface;
+use Illuminate\Support\Collection;
 
 class UserCommandsParser
 {
@@ -77,12 +79,12 @@ class UserCommandsParser
     /**
      * Create the user tile picks.
      *
-     * @return UserTilePicksCollection
+     * @return UserAssocTilesCollectionInterface
      */
     public function createUserTilePicks()
     {
         $countPerUser = collect();
-        $userTilePicks = $this->factory->createUserTilePicksCollection();
+        $userTilePicks = collect();
 
         foreach ($this->commandsWithUser as $commandWithUser) {
             list($user, $command) = $commandWithUser;
@@ -104,22 +106,22 @@ class UserCommandsParser
 
                 if ($this->pickableRepository->isPickable($x, $y, $user)) {
                     $userTilePicks->push(
-                        $this->factory->createUserTilePick($user, $x, $y)
+                        $this->factory->createUserAssociatedTile($user, $x, $y)
                     );
                 }
             }
         }
 
-        return $this->filterDuplicatePicks($userTilePicks);
+        return $this->factory->createAssocTileCollection($this->filterDuplicatePicks($userTilePicks)->all());
     }
 
     /**
      * Filter out the duplicate picks.
      *
-     * @param UserTilePicksCollection $collection
-     * @return UserTilePicksCollection
+     * @param Collection $collection
+     * @return Collection
      */
-    protected function filterDuplicatePicks(UserTilePicksCollection $collection)
+    protected function filterDuplicatePicks(Collection $collection)
     {
         $chosenTiles = collect();
 

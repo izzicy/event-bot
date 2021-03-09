@@ -2,8 +2,12 @@
 
 namespace App\Services\MMGame;
 
+use App\Services\MMGame\Collections\AggregateAssocTileCollection;
+use App\Services\MMGame\Collections\AssocTileCollection;
 use App\Services\MMGame\Conquerers\Conquerer;
 use App\Services\MMGame\Contracts\PickableRepositoryInterface;
+use App\Services\MMGame\Contracts\UserAssociatedTileInterface;
+use App\Services\MMGame\Contracts\UserAssocTilesCollectionInterface;
 use App\Services\StateGrid\StateGridInterface;
 use App\Services\Users\DiscordUser;
 use App\Services\Users\UserInterface;
@@ -38,39 +42,50 @@ class Factory
     }
 
     /**
-     * Create a tile picked by the user.
-     *
-     * @param UserInterface $user
-     * @param int $tileX
-     * @param int $tileY
-     * @return UserTilePick
-     */
-    public function createUserTilePick(UserInterface $user, $tileX, $tileY)
-    {
-        return new UserTilePick($user, $tileX, $tileY);
-    }
-
-    /**
-     * Create a new user tile pick collection.
-     *
-     * @param array $userTilePicks
-     * @return UserTilePicksCollection
-     */
-    public function createUserTilePicksCollection(array $userTilePicks = [])
-    {
-        return new UserTilePicksCollection($userTilePicks);
-    }
-
-    /**
      * Create the conquerer.
      *
      * @param PickableRepositoryInterface $pickableRepository
      * @param StateGridInterface $grid
-     * @param UserTilePicksCollection $picks
+     * @param UserAssocTilesCollectionInterface $picks
      * @return Conquerer
      */
-    public function createConquerer(PickableRepositoryInterface $pickableRepository, StateGridInterface $grid, UserTilePicksCollection $picks)
+    public function createConquerer(PickableRepositoryInterface $pickableRepository, StateGridInterface $grid, UserAssocTilesCollectionInterface $picks)
     {
         return new Conquerer($this, $pickableRepository, $grid, $picks);
+    }
+
+    /**
+     * Create a user associated tile.
+     *
+     * @param UserInterface $user
+     * @param int $tileX
+     * @param int $tileY
+     * @return UserAssociatedTileInterface
+     */
+    public function createUserAssociatedTile(UserInterface $user, $tileX, $tileY)
+    {
+        return new UserAssociatedTile($user, $tileX, $tileY);
+    }
+
+    /**
+     * Create an aggregate associated tile collection.
+     *
+     * @param UserAssocTilesCollectionInterface[] $collections
+     * @return UserAssocTilesCollectionInterface
+     */
+    public function createAggreateAssocTileCollection($collections)
+    {
+        return new AggregateAssocTileCollection($collections);
+    }
+
+    /**
+     * Create an associated tile collection.
+     *
+     * @param UserAssociatedTileInterface[] $assocTiles
+     * @return UserAssocTilesCollectionInterface
+     */
+    public function createAssocTileCollection($assocTiles)
+    {
+        return new AssocTileCollection($assocTiles);
     }
 }

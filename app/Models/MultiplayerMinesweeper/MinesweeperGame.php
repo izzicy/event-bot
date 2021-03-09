@@ -4,6 +4,7 @@ namespace App\Models\MultiplayerMinesweeper;
 
 use App\Models\StateGrid;
 use App\Services\MMGame\Contracts\PickableRepositoryInterface;
+use App\Services\MMGame\Contracts\UserAssocTilesCollectionInterface;
 use App\Services\Users\UserInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -44,6 +45,26 @@ class MinesweeperGame extends Model implements PickableRepositoryInterface
         ]);
 
         return $game;
+    }
+
+    /**
+     * Create conquered tiles from the given collection.
+     *
+     * @param UserAssocTilesCollectionInterface $picks
+     * @return $this
+     */
+    public function createConqueredTilesFrom(UserAssocTilesCollectionInterface $collection)
+    {
+        foreach ($collection->all() as $pick) {
+            ConqueredTile::forceCreate([
+                'user_id' => $pick->getUser()->getId(),
+                'game_id' => $this->getKey(),
+                'x_coord' => $pick->getX(),
+                'y_coord' => $pick->getY(),
+            ]);
+        }
+
+        return $this;
     }
 
     /**

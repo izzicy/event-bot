@@ -2,7 +2,7 @@
 
 namespace App\Services\MMGame;
 
-use App\Services\StateGrid\MemoryStateGrid;
+use App\Services\MMGame\Contracts\UserAssocTilesCollectionInterface;
 use App\Services\StateGrid\StateGridInterface;
 
 class MineDistributer
@@ -11,11 +11,11 @@ class MineDistributer
      * Distribute the mines over the grid.
      *
      * @param StateGridInterface $grid
-     * @param UserTilePicksCollection $picks
+     * @param UserAssocTilesCollectionInterface $picks
      * @param int $mineCount
      * @return $this
      */
-    public function distribute(StateGridInterface $grid, UserTilePicksCollection $picks, $mineCount)
+    public function distribute(StateGridInterface $grid, UserAssocTilesCollectionInterface $picks, $mineCount)
     {
         $height = $grid->getHeight();
         $width = $grid->getWidth();
@@ -29,7 +29,7 @@ class MineDistributer
                 $randX = rand(0, $width - 1);
                 $randY = rand(0, $height - 1);
 
-                $placed = $picks->isPicked($randX, $randY);
+                $placed = $picks->hasTileAt($randX, $randY);
 
                 if ($placed) {
                     $gridWithCounts[$randX][$randY] = 'mine';
