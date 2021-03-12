@@ -31,7 +31,11 @@ class PhraseCreator
                 return '**' . $user->getUsername() . '**';
             })->toItemsInSeries(true);
 
-            if ($isCorrectChoice) {
+            if ($door === 'cheater') {
+                Lang::choice('choose-your-door.cheater', $users->count(), [
+                    'users' => $usersItemsInSeries,
+                ]);
+            } else if ($isCorrectChoice) {
                 $message .= Lang::choice($this->getLocalisation('win-lines.' . $winningIndex), $users->count(), [
                     'users' => $usersItemsInSeries,
                 ]);
