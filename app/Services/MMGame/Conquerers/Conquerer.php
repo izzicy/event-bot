@@ -44,7 +44,7 @@ class Conquerer
      *
      * @var
      */
-    protected $queues;
+    protected $queues = [];
 
     /**
      * The discovered tiles.
@@ -112,7 +112,7 @@ class Conquerer
      */
     protected function initializeQueues()
     {
-        foreach ($this->picks as $pick) {
+        foreach ($this->picks->all() as $pick) {
             $this->enqueue($pick->getUser(), $pick->getX(), $pick->getY());
         }
     }
@@ -126,7 +126,7 @@ class Conquerer
     {
         $users = collect();
 
-        foreach ($this->picks as $pick) {
+        foreach ($this->picks->all() as $pick) {
             if ( ! $users->has($pick->getUser()->getId())) {
                 $users->put($pick->getUser()->getId(), $pick->getUser());
             }
@@ -146,10 +146,10 @@ class Conquerer
     protected function handleNeighbouringTiles($tileX, $tileY, UserInterface $user)
     {
         $neighbours = [
-            [ $listX - 1, $listY ],
-            [ $listX + 1, $listY ],
-            [ $listX, $listY + 1 ],
-            [ $listX, $listY - 1 ],
+            [ $tileX - 1, $tileY ],
+            [ $tileX + 1, $tileY ],
+            [ $tileX, $tileY + 1 ],
+            [ $tileX, $tileY - 1 ],
         ];
 
         foreach ($neighbours as $neighbour) {
@@ -168,7 +168,7 @@ class Conquerer
     protected function handleTileNeighbour($tileX, $tileY, UserInterface $user)
     {
         if ($this->pickableRepository->isPickable($tileX, $tileY, $user) && $this->isDiscovered($tileX, $tileY) === false) {
-            $this->discoverTile($tileX, $tilyY, $user);
+            $this->discoverTile($tileX, $tileY, $user);
             $this->enqueue($user, $tileX, $tileY);
         }
     }
@@ -221,7 +221,7 @@ class Conquerer
      */
     protected function dequeue(UserInterface $user)
     {
-        return array_unshift($this->queues[$user->getId()]);
+        return array_shift($this->queues[$user->getId()]);
     }
 
     /**

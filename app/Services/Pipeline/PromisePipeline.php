@@ -31,6 +31,8 @@ class PromisePipeline extends Pipeline
                 $pipeline[] = function($passable, $next) use ($promise) {
                     $promise->done(function($resolved) use ($next) {
                         $next($resolved);
+                    }, function($fail) {
+                        throw $fail;
                     });
                 };
             }

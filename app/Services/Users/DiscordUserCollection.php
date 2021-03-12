@@ -5,6 +5,7 @@ namespace App\Services\Users;
 use App\Services\Pipeline\PromisePipeline;
 use Discord\Discord;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pipeline\Pipeline;
 use React\Promise\Deferred;
 use React\Promise\Promise;
 
@@ -21,10 +22,14 @@ class DiscordUserCollection extends Collection
         $deferred = new Deferred();
 
         $pipeline = $this->map(function($user) use ($discord) {
-            return $user->loadUserIfMissing($discord);
+            return function($passable, $next) use ($user, $discord) {
+                $user->loadUserIfMissing($discord)->done(function($user) use ($next) {
+                    $next($user);
+                });
+            };
         })->all();
 
-        app(PromisePipeline::class)
+        (new Pipeline())
             ->through($pipeline)
             ->then(function() use ($deferred) {
                 $deferred->resolve();

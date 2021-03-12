@@ -25,7 +25,7 @@ class Factory
      */
     public function createUserCommandsParserFromDiscordMessages($messages, PickableRepositoryInterface $pickableRepository)
     {
-        $parser = new UserCommandsParser($this, $pickableRepository);
+    $parser = new UserCommandsParser($this, $pickableRepository);
 
         foreach ($messages as $message) {
             $author = $message->author;
@@ -87,5 +87,25 @@ class Factory
     public function createAssocTileCollection($assocTiles)
     {
         return new AssocTileCollection($assocTiles);
+    }
+
+    /**
+     * Create the game drawer.
+     *
+     * @return GameDrawer
+     */
+    public function createGameDrawer()
+    {
+        return new GameDrawer($this);
+    }
+
+    /**
+     * Create the mine distributer.
+     *
+     * @return MineDistributer
+     */
+    public function createMineDistributer()
+    {
+        return new MineDistributer();
     }
 }

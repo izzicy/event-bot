@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\Users\DiscordUser as UserFromDiscord;
 use App\Services\Users\DiscordUserCollection;
 use App\Services\Users\HasUserTrait;
 use App\Services\Users\UserInterface;
@@ -38,7 +39,7 @@ class DiscordUser extends Model implements UserInterface
     public function loadUser(Discord $discord)
     {
         return $discord->users->fetch($this->getKey())->then(function ($user) {
-            $user = new DiscordUser($user);
+            $user = new UserFromDiscord($user);
 
             $this->user = $user;
 

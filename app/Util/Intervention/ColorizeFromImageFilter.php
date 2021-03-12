@@ -40,10 +40,7 @@ class ColorizeFromImageFilter extends FilterInterface
      */
     public function applyFilter(Image $image)
     {
-        $background = ImageManagerStatic::canvas($this->fromImage->getWidth(), $this->fromImage->getHeight(), '#ffffff');
-        list($r, $g, $b) = $background->insert($this->fromImage)->limitColors(1)->pickColor(0, 0);
-
-        $image->destroy();
+        list($r, $g, $b) = ImageUtil::getDominatingColor($image);
 
         $image->colorize(
             ($r - (255 / 2)) / (255 / 2) * $this->strength,

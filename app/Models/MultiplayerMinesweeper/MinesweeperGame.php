@@ -2,6 +2,7 @@
 
 namespace App\Models\MultiplayerMinesweeper;
 
+use App\Models\DiscordUser;
 use App\Models\StateGrid;
 use App\Services\MMGame\Contracts\PickableRepositoryInterface;
 use App\Services\MMGame\Contracts\UserAssocTilesCollectionInterface;
@@ -56,6 +57,12 @@ class MinesweeperGame extends Model implements PickableRepositoryInterface
     public function createConqueredTilesFrom(UserAssocTilesCollectionInterface $collection)
     {
         foreach ($collection->all() as $pick) {
+            if (DiscordUser::find($pick->getUser()->getId() === null)) {
+                DiscordUser::forceCreate([
+                    'id' => $pick->getUser()->getId(),
+                ]);
+            }
+
             ConqueredTile::forceCreate([
                 'user_id' => $pick->getUser()->getId(),
                 'game_id' => $this->getKey(),
@@ -82,7 +89,7 @@ class MinesweeperGame extends Model implements PickableRepositoryInterface
 
         return $this->conquered->filter(function($conquered) use ($tileX, $tileY) {
             return $conquered->x_coord === $tileX || $conquered->y_coord === $tileY;
-        })->count() > 0;
+        })->count() <= 0;
     }
 
     /**

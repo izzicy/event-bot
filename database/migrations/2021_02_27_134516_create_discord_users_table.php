@@ -14,7 +14,7 @@ class CreateDiscordUsersTable extends Migration
     public function up()
     {
         Schema::create('discord_users', function (Blueprint $table) {
-            $table->integer('id')->primary();
+            $table->string('id', 63)->primary();
         });
     }
 

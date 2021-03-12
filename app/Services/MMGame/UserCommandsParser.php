@@ -101,8 +101,8 @@ class UserCommandsParser
             }
 
             if (preg_match('/(?P<x>\d+)\s?(:| |;|-|,|\.)\s?(?P<y>\d+)/', $command, $matches)) {
-                $x = $matches['x'];
-                $y = $matches['y'];
+                $x = (int) $matches['x'];
+                $y = (int) $matches['y'];
 
                 if ($this->pickableRepository->isPickable($x, $y, $user)) {
                     $userTilePicks->push(

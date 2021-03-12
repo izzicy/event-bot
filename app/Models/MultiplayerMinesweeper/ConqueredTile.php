@@ -11,6 +11,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ConqueredTile extends Model implements UserAssociatedTileInterface
 {
+    const UPDATED_AT = null;
+    const CREATED_AT = null;
+
     /**
      * The table associated with the model.
      *

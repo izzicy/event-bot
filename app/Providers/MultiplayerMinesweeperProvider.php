@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\MMGame\Factory;
 use Illuminate\Support\ServiceProvider;
 
 class MultiplayerMinesweeperProvider extends ServiceProvider
@@ -13,7 +14,7 @@ class MultiplayerMinesweeperProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->singleton(Factory::class);
     }
 
     /**
