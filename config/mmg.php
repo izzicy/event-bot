@@ -7,4 +7,5 @@ return [
     'tile-size' => 32,
 
     'tile-image-path' => storage_path('app/mmg/out-tile.png'),
+    'font-path' => storage_path('app/mmg/font.ttf'),
 ];

@@ -65,6 +65,20 @@ class GameDrawer
                     $this->drawColoredSquare($canvas, $x, $y, $tileSize, $assocTile->getUser());
                 } else {
                     $canvas->insert($tile, 'top-left', $x * $tileSize, $y * $tileSize);
+                    $canvas->text($x, round($x * $tileSize + $tileSize * 0.25), round($y * $tileSize + $tileSize * 0.25), function($font) {
+                        $font->file(config('mmg.font-path'));
+                        $font->size(13);
+                        $font->color('#fffff');
+                        $font->align('center');
+                        $font->valign('top');
+                    });
+                    $canvas->text($y, round($x * $tileSize + $tileSize * 0.75), round($y * $tileSize + $tileSize * 0.75), function($font) {
+                        $font->file(config('mmg.font-path'));
+                        $font->size(13);
+                        $font->color('#fffff');
+                        $font->align('center');
+                        $font->valign('bottom');
+                    });
                 }
             }
         }

@@ -76,7 +76,9 @@ class MmgNewGame extends Command
 
         (new Pipeline(app()))
             ->through($pipelines)
-            ->thenReturn();
+            ->then(function() use ($game) {
+                $this->info('Game id: ' . $game->getKey());
+            });
 
         $discord->run();
     }
