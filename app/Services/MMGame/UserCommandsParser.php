@@ -85,6 +85,7 @@ class UserCommandsParser
     {
         $countPerUser = collect();
         $userTilePicks = collect();
+        $taken = [];
 
         foreach ($this->commandsWithUser as $commandWithUser) {
             list($user, $command) = $commandWithUser;
@@ -104,7 +105,8 @@ class UserCommandsParser
                 $x = (int) $matches['x'];
                 $y = (int) $matches['y'];
 
-                if ($this->pickableRepository->isPickable($x, $y, $user)) {
+                if ($this->pickableRepository->isPickable($x, $y, $user) && empty($taken[$x][$y])) {
+                    $taken[$x][$y] = true;
                     $userTilePicks->push(
                         $this->factory->createUserAssociatedTile($user, $x, $y)
                     );

@@ -3,6 +3,7 @@
 namespace App\Services\MMGame;
 
 use App\Models\MultiplayerMinesweeper\MinesweeperGame;
+use App\Services\MMGame\Contracts\UserAssocTilesCollectionInterface;
 use App\Services\StateGrid\StateGridInterface;
 use App\Services\Users\UserInterface;
 use App\Util\Intervention\ImageUtil;
@@ -59,26 +60,40 @@ class GameDrawer
 
         foreach (range(0, $width - 1) as $x) {
             foreach (range(0, $height - 1) as $y) {
-                if ($collection->hasTileAt($x, $y)) {
+                $stateAtCoords = $grid->getStateAt($x, $y);
+
+                if (
+                    preg_match('/^nearby_(?P<minecount>\d+)$/', $stateAtCoords, $matches)
+                    && (
+                        $collection->hasTileAt($x, $y)
+                        || $this->nearbyHasBeenConquered($x, $y, $grid, $collection)
+                    )
+                ) {
+                    if ($collection->hasTileAt($x, $y)) {
+                        $assocTile = $collection->getTileAt($x, $y);
+
+                        $this->drawColoredSquare($canvas, $x, $y, $tileSize, $assocTile->getUser());
+                    } else {
+                        $canvas->insert(
+                            ImageManagerStatic::canvas($tileSize - 2, $tileSize - 2, '#000000'),
+                            'top-left',
+                            ($x * $tileSize) + 1,
+                            ($y * $tileSize) + 1
+                        );
+                    }
+                    $canvas->text($matches['minecount'], round($x * $tileSize + $tileSize * 0.5), round($y * $tileSize + $tileSize * 0.5), function($font) {
+                        $font->file(config('mmg.font-path'));
+                        $font->size(13);
+                        $font->color('#fffff');
+                        $font->align('center');
+                        $font->valign('middle');
+                    });
+                } else if ($collection->hasTileAt($x, $y)) {
                     $assocTile = $collection->getTileAt($x, $y);
 
                     $this->drawColoredSquare($canvas, $x, $y, $tileSize, $assocTile->getUser());
                 } else {
-                    $canvas->insert($tile, 'top-left', $x * $tileSize, $y * $tileSize);
-                    $canvas->text($x, round($x * $tileSize + $tileSize * 0.25), round($y * $tileSize + $tileSize * 0.25), function($font) {
-                        $font->file(config('mmg.font-path'));
-                        $font->size(13);
-                        $font->color('#fffff');
-                        $font->align('center');
-                        $font->valign('top');
-                    });
-                    $canvas->text($y, round($x * $tileSize + $tileSize * 0.75), round($y * $tileSize + $tileSize * 0.75), function($font) {
-                        $font->file(config('mmg.font-path'));
-                        $font->size(13);
-                        $font->color('#fffff');
-                        $font->align('center');
-                        $font->valign('bottom');
-                    });
+                    $this->drawEmptyTile($canvas, $tile, $x, $y, $tileSize);
                 }
             }
         }
@@ -114,5 +129,65 @@ class GameDrawer
             ($x * $tileSize) + 1,
             ($y * $tileSize) + 1
         );
+    }
+
+    /**
+     * Draw an empty tile.
+     *
+     * @param Image $canvas
+     * @param Image $tile
+     * @param int $x
+     * @param int $y
+     * @param int $tileSize
+     * @return void
+     */
+    protected function drawEmptyTile($canvas, $tile, $x, $y, $tileSize)
+    {
+        $canvas->insert($tile, 'top-left', $x * $tileSize, $y * $tileSize);
+        $canvas->text($x, round($x * $tileSize + $tileSize * 0.25), round($y * $tileSize + $tileSize * 0.25), function($font) {
+            $font->file(config('mmg.font-path'));
+            $font->size(13);
+            $font->color('#fffff');
+            $font->align('center');
+            $font->valign('top');
+        });
+        $canvas->text($y, round($x * $tileSize + $tileSize * 0.75), round($y * $tileSize + $tileSize * 0.75), function($font) {
+            $font->file(config('mmg.font-path'));
+            $font->size(13);
+            $font->color('#fffff');
+            $font->align('center');
+            $font->valign('bottom');
+        });
+    }
+
+    /**
+     * Check if nearby has been conquered.
+     *
+     * @param int $x
+     * @param int $y
+     * @param StateGridInterface $grid
+     * @param UserAssocTilesCollectionInterface $collection
+     * @return bool
+     */
+    protected function nearbyHasBeenConquered($x, $y, $grid, $collection)
+    {
+        $candidates = [
+            [$x - 1, $y],
+            [$x, $y - 1],
+            [$x - 1, $y - 1],
+            [$x + 1, $y],
+            [$x, $y + 1],
+            [$x + 1, $y + 1],
+            [$x - 1, $y + 1],
+            [$x + 1, $y - 1],
+        ];
+
+        foreach ($candidates as $candidate) {
+            if ($grid->getStateAt($candidate[0], $candidate[1]) === 'empty' && $collection->hasTileAt($candidate[0], $candidate[1])) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

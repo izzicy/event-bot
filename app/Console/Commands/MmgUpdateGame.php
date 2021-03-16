@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Discord\DiscordCloseMiddleware;
 use App\Discord\OnDiscordReadyMiddleware;
 use App\Models\MultiplayerMinesweeper\MinesweeperGame;
+use App\Services\MMGame\Contracts\UserAssocTilesCollectionInterface;
 use App\Services\MMGame\Factory;
 use App\Services\Users\DiscordUserCollection;
 use Closure;
@@ -85,6 +86,8 @@ class MmgUpdateGame extends Command
 
                     $users = new DiscordUserCollection();
 
+                    $game->refresh();
+
                     foreach ($game->conquered as $conquered) {
                         $users->push($conquered->user);
                     }
@@ -121,15 +124,25 @@ class MmgUpdateGame extends Command
         $discord->run();
     }
 
+    /**
+     * Initalize the game if it hadn't initilized yet.
+     *
+     * @param MinesweeperGame $game
+     * @param Factory $factory
+     * @param UserAssocTilesCollectionInterface $picks
+     * @return void
+     */
     protected function initializeIfNotInitialized(MinesweeperGame $game, Factory $factory, $picks)
     {
-        if ($game->initailized === false) {
+        if ($game->initialized === false) {
             $game->initialized = true;
             $game->save();
 
             $distributer = $factory->createMineDistributer();
 
-            $distributer->distribute($game->grid, $picks, 10);
+            $distributer->distribute($game->grid, $picks, 40);
+
+            $game->grid->save();
         }
     }
 }

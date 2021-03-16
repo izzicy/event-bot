@@ -29,9 +29,7 @@ class MineDistributer
                 $randX = rand(0, $width - 1);
                 $randY = rand(0, $height - 1);
 
-                $placed = $picks->hasTileAt($randX, $randY);
-
-                if ($placed) {
+                if ($picks->hasTileAt($randX, $randY) === false && $gridWithCounts[$randX][$randY] !== 'mine') {
                     $gridWithCounts[$randX][$randY] = 'mine';
 
                     $this->incrementCountAt($gridWithCounts, $randX - 1, $randY);
@@ -43,6 +41,8 @@ class MineDistributer
                     $this->incrementCountAt($gridWithCounts, $randX - 1, $randY + 1);
                     $this->incrementCountAt($gridWithCounts, $randX + 1, $randY - 1);
                     $this->incrementCountAt($gridWithCounts, $randX + 1, $randY + 1);
+
+                    $placed = true;
                 }
             } while ($placed === false);
         }

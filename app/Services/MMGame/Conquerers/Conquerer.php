@@ -233,6 +233,10 @@ class Conquerer
      */
     protected function isDiscovered($tileX, $tileY)
     {
+        if ($this->grid->getStateAt($tileX, $tileY) !== 'empty') {
+            return true;
+        }
+
         return isset($this->discovered[$tileX][$tileY]);
     }
 

@@ -21,6 +21,15 @@ class MinesweeperGame extends Model implements PickableRepositoryInterface
     protected $table = 'multiplay_minesweeper_games';
 
     /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'initialized' => 'boolean',
+    ];
+
+    /**
      * Create a new game.
      *
      * @param int $width
@@ -88,7 +97,7 @@ class MinesweeperGame extends Model implements PickableRepositoryInterface
         }
 
         return $this->conquered->filter(function($conquered) use ($tileX, $tileY) {
-            return $conquered->x_coord === $tileX || $conquered->y_coord === $tileY;
+            return $conquered->x_coord === $tileX && $conquered->y_coord === $tileY;
         })->count() <= 0;
     }
 
