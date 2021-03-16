@@ -113,7 +113,7 @@ class Conquerer
     protected function initializeQueues()
     {
         foreach ($this->picks->all() as $pick) {
-            $this->enqueue($pick->getUser(), $pick->getX(), $pick->getY());
+            $this->handleTile($pick->getX(), $pick->getY(), $pick->getUser());
         }
     }
 
@@ -150,26 +150,34 @@ class Conquerer
             [ $tileX + 1, $tileY ],
             [ $tileX, $tileY + 1 ],
             [ $tileX, $tileY - 1 ],
+            [ $tileX - 1, $tileY - 1 ],
+            [ $tileX + 1, $tileY - 1 ],
+            [ $tileX - 1, $tileY + 1 ],
+            [ $tileX + 1, $tileY + 1 ],
         ];
 
         foreach ($neighbours as $neighbour) {
-            $this->handleTileNeighbour($neighbour[0], $neighbour[1], $user);
+            $this->handleTile($neighbour[0], $neighbour[1], $user);
         }
     }
 
     /**
-     * Handle the tile neighbour.
+     * Handle the tile.
      *
      * @param int $tileX
      * @param int $tileY
      * @param UserInterface $user
      * @return void
      */
-    protected function handleTileNeighbour($tileX, $tileY, UserInterface $user)
+    protected function handleTile($tileX, $tileY, UserInterface $user)
     {
         if ($this->pickableRepository->isPickable($tileX, $tileY, $user) && $this->isDiscovered($tileX, $tileY) === false) {
-            $this->discoverTile($tileX, $tileY, $user);
-            $this->enqueue($user, $tileX, $tileY);
+            if ($this->grid->getStateAt($tileX, $tileY) === 'empty') {
+                $this->discoverTile($tileX, $tileY, $user);
+                $this->enqueue($user, $tileX, $tileY);
+            } else if (preg_match('/^nearby_\d+$/', $this->grid->getStateAt($tileX, $tileY))) {
+                $this->discoverTile($tileX, $tileY, $user);
+            }
         }
     }
 
@@ -233,10 +241,6 @@ class Conquerer
      */
     protected function isDiscovered($tileX, $tileY)
     {
-        if ($this->grid->getStateAt($tileX, $tileY) !== 'empty') {
-            return true;
-        }
-
         return isset($this->discovered[$tileX][$tileY]);
     }
 
