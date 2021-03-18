@@ -12,7 +12,7 @@ class MessageCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'message {message} {--channel=}';
+    protected $signature = 'message {message} {--channel=} {--image=}';
 
     /**
      * The console command description.
@@ -46,9 +46,19 @@ class MessageCommand extends Command
             $channelId = $this->option('channel') ?? config('choose-your-door-game.default-channel');
             $channel = $discord->getChannel($channelId);
 
-            $channel->sendMessage($this->argument('message'))->then(function() use ($discord) {
-                $discord->close();
-            });
+            $image = $this->option('image');
+            $message = str_replace('\\n', "\n", $this->argument('message'));
+
+            if ($image) {
+                $channel->sendFile($image, null, $message)->then(function() use ($discord) {
+                    $discord->close();
+                });
+            } else {
+                $channel->sendMessage($message)->then(function() use ($discord) {
+                    $discord->close();
+                });
+
+            }
         });
 
         $discord->run();
