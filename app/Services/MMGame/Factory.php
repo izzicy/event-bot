@@ -2,12 +2,16 @@
 
 namespace App\Services\MMGame;
 
+use App\Models\MultiplayerMinesweeper\MinesweeperGame;
 use App\Services\MMGame\Collections\AggregateAssocTileCollection;
 use App\Services\MMGame\Collections\AssocTileCollection;
 use App\Services\MMGame\Conquerers\Conquerer;
 use App\Services\MMGame\Contracts\PickableRepositoryInterface;
 use App\Services\MMGame\Contracts\UserAssociatedTileInterface;
 use App\Services\MMGame\Contracts\UserAssocTilesCollectionInterface;
+use App\Services\MMGame\Draw\AbstractGameDrawer;
+use App\Services\MMGame\Draw\OpenGameDrawer;
+use App\Services\MMGame\Draw\StandardGameDrawer;
 use App\Services\StateGrid\StateGridInterface;
 use App\Services\Users\DiscordUser;
 use App\Services\Users\UserInterface;
@@ -90,13 +94,26 @@ class Factory
     }
 
     /**
-     * Create the game drawer.
+     * Create a open game drawer.
      *
-     * @return GameDrawer
+     * @param MinesweeperGame $game
+     * @return AbstractGameDrawer
      */
-    public function createGameDrawer()
+    public function createOpenDrawer(MinesweeperGame $game): AbstractGameDrawer
     {
-        return new GameDrawer($this);
+        return new OpenGameDrawer($this, $game);
+    }
+
+
+    /**
+     * Create a standard game drawer.
+     *
+     * @param MinesweeperGame $game
+     * @return AbstractGameDrawer
+     */
+    public function createStandardDrawer(MinesweeperGame $game): AbstractGameDrawer
+    {
+        return new StandardGameDrawer($this, $game);
     }
 
     /**

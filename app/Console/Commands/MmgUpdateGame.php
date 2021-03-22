@@ -56,7 +56,7 @@ class MmgUpdateGame extends Command
 
         /** @var Factory */
         $factory = app(Factory::class);
-        $drawer = $factory->createGameDrawer();
+        $drawer = $factory->createOpenDrawer($game);
 
         $pipelines = [
             new OnDiscordReadyMiddleware($discord),
@@ -105,7 +105,7 @@ class MmgUpdateGame extends Command
                 try {
                     $channel = $discord->getChannel($channelId);
 
-                    $channel->sendFile($drawer->draw($game))->done(function() use ($next) {
+                    $channel->sendFile($drawer->draw())->done(function() use ($next) {
                         $next(null);
                     });
                 }
@@ -140,7 +140,7 @@ class MmgUpdateGame extends Command
 
             $distributer = $factory->createMineDistributer();
 
-            $distributer->distribute($game->grid, $picks, 40);
+            $distributer->distribute($game->grid, $picks, 10);
 
             $game->grid->save();
         }

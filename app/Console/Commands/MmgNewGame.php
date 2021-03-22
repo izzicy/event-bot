@@ -57,7 +57,7 @@ class MmgNewGame extends Command
 
         /** @var Factory */
         $factory = app(Factory::class);
-        $drawer = $factory->createGameDrawer();
+        $drawer = $factory->createStandardDrawer($game);
 
         $pipelines = [
             new OnDiscordReadyMiddleware($discord),
@@ -66,7 +66,7 @@ class MmgNewGame extends Command
             function($passable, Closure $next) use ($discord, $drawer, $channelId, $game) {
                 $channel = $discord->getChannel($channelId);
 
-                $channel->sendFile($drawer->draw($game))->done(function() use ($next) {
+                $channel->sendFile($drawer->draw())->done(function() use ($next) {
                     $next(null);
                 });;
             },
