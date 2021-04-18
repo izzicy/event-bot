@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'cheater' => ':users cheated. :x:',
+    'cheater' => ':users chose multiple doors. :x:',
 ];
