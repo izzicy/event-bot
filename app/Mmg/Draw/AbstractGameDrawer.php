@@ -1,61 +1,36 @@
 <?php
 
-namespace App\Services\MMGame\Draw;
+namespace App\Mmg\Draw;
 
-use App\Models\MultiplayerMinesweeper\MinesweeperGame;
-use App\Services\MMGame\Factory;
+use App\Mmg\Contracts\DrawInterface;
+use App\Mmg\Contracts\FactoryInterface;
 use App\Services\Users\UserInterface;
 use App\Util\Intervention\ImageUtil;
 use Intervention\Image\Image;
 use Intervention\Image\ImageManagerStatic;
 
-abstract class AbstractGameDrawer
+abstract class AbstractGameDrawer implements DrawInterface
 {
-    /**
-     * The factory instance.
-     *
-     * @var Factory
-     */
+    /** @var FactoryInterface */
     protected $factory;
 
-    /**
-     * The game instance.
-     *
-     * @var MinesweeperGame
-     */
-    protected $game;
-
-    /**
-     * The tile image.
-     *
-     * @var Image
-     */
+    /** @var Image */
     protected $tile;
 
-    /**
-     * The mine image.
-     *
-     * @var Image
-     */
+    /** @var Image */
     protected $mine;
 
-    /**
-     * The canvas.
-     *
-     * @var Image
-     */
+    /** @var Image */
     protected $canvas;
 
     /**
      * Drawer constructor.
      *
-     * @param Factory $factory
-     * @param MinesweeperGame $game
+     * @param FactoryInterface $factory
      */
-    public function __construct(Factory $factory, MinesweeperGame $game)
+    public function __construct(FactoryInterface $factory)
     {
         $this->factory = $factory;
-        $this->game = $game;
         $this->tile = ImageManagerStatic::make(config('mmg.tile-image-path'));
         $this->mine = ImageManagerStatic::make(config('mmg.mine-image-path'));
 
@@ -63,8 +38,7 @@ abstract class AbstractGameDrawer
 
         $this->tile->resize($tileSize, $tileSize);
         $this->mine->resize($tileSize, $tileSize);
-
-        $this->canvas = $this->createCanvas($game->grid->getWidth(), $game->grid->getHeight());
+        $this->canvas = ImageManagerStatic::canvas(0, 0);
     }
 
     /**
@@ -78,7 +52,7 @@ abstract class AbstractGameDrawer
     {
         $tileSize = $this->getTileSize();
 
-        return ImageManagerStatic::canvas($width * $tileSize, $height * $tileSize, array(0, 0, 0, 0));
+        return $this->canvas = ImageManagerStatic::canvas($width * $tileSize, $height * $tileSize, array(0, 0, 0, 0));
     }
 
     /**
@@ -253,10 +227,6 @@ abstract class AbstractGameDrawer
         return false;
     }
 
-    /**
-     * Draw the game.
-     *
-     * @return string
-     */
-    abstract public function draw();
+    /** @inheritDoc */
+    abstract public function draw($game);
 }

@@ -1,16 +1,12 @@
 <?php
 
-namespace App\Services\MMGame\Draw;
+namespace App\Mmg\Draw;
 
 class OpenGameDrawer extends AbstractGameDrawer
 {
-    /**
-     * @inheritdoc
-     */
-    public function draw()
+    /** @inheritdoc */
+    public function draw($game)
     {
-        $game = $this->game;
-
         /** @var StateGridInterface */
         $grid = $game->grid;
 
@@ -27,10 +23,6 @@ class OpenGameDrawer extends AbstractGameDrawer
             }
         }
 
-        $path = tempnam(sys_get_temp_dir(), 'image') . '.png';
-
-        $this->canvas->save($path);
-
-        return $path;
+        return $this->canvas->getCore();
     }
 }

@@ -1,43 +1,21 @@
 <?php
 
-namespace App\Services\MMGame\Conquerers;
+namespace App\Services\MMGame;
 
-use App\Services\MMGame\Contracts\PickableRepositoryInterface;
-use App\Services\MMGame\Contracts\UserAssocTilesCollectionInterface;
-use App\Services\MMGame\Factory;
-use App\Services\StateGrid\StateGridInterface;
+use App\Mmg\Contracts\GameInterface;
+use App\Mmg\Contracts\GameOperatorInterface;
 use App\Services\Users\UserInterface;
-use Illuminate\Support\Collection;
 
-class Conquerer
+class MineDistributer implements GameOperatorInterface
 {
-    /**
-     * The factory.
-     *
-     * @var Factory
-     */
-    protected $factory;
+    /** @var GameInterface */
+    protected $game;
 
-    /**
-     * The pickable repository.
-     *
-     * @var PickableRepositoryInterface
-     */
-    protected $pickableRepository;
+    /** @var array[]int[] */
+    protected $pickedTiles;
 
-    /**
-     * The state grid.
-     *
-     * @var StateGridInterface
-     */
-    protected $grid;
-
-    /**
-     * The user picks collection.
-     *
-     * @var UserAssocTilesCollectionInterface
-     */
-    protected $picks;
+    /** @var UserInterface[] */
+    protected $users;
 
     /**
      * The queues per user.
@@ -54,20 +32,26 @@ class Conquerer
     protected $discovered = [];
 
     /**
-     * @param Factory $factory
-     * @param PickableRepositoryInterface $pickableRepository
-     * @param StateGridInterface $grid
-     * @param UserAssocTilesCollectionInterface $picks
+     * Mine distributer constructor.
+     *
+     * @param array[]int[] $pickedTiles
+     * @param UserInterface[] $users
      */
-    public function __construct(Factory $factory, PickableRepositoryInterface $pickableRepository, StateGridInterface $grid, UserAssocTilesCollectionInterface $picks)
+    public function __construct($pickedTiles, $users)
     {
-        $this->pickableRepository = $pickableRepository;
-        $this->grid = $grid;
-        $this->picks = $picks;
-        $this->factory = $factory;
+        $this->pickedTiles = $pickedTiles;
+        $this->users = $users;
+    }
+
+    /** @inheritDoc */
+    public function operateGame($game)
+    {
+        $this->queues = [];
+        $this->discovered = [];
+        $this->game = $game;
 
         $this->initializeQueues();
-        $users = $this->getUsersFromPicks();
+        $users = $this->users;
 
         while ($this->someQueuesAreNotEmpty()) {
             foreach ($users as $user) {
@@ -78,31 +62,14 @@ class Conquerer
                 }
             }
         }
-    }
-
-    /**
-     * Get the conquered picks.
-     *
-     * @return UserAssocTilesCollectionInterface
-     */
-    public function getConqueredPicks()
-    {
-        $extraPicks = collect();
 
         foreach ($this->discovered as $x => $rows) {
             foreach ($rows as $y => $user) {
-                if ($this->picks->hasTileAt($x, $y) === false) {
-                    $extraPicks->push(
-                        $this->factory->createUserAssociatedTile($user, $x, $y)
-                    );
-                }
+                $tile = $game->getTileAt($x, $y);
+
+                $tile->setConquerer($user);
             }
         }
-
-        return $this->factory->createAggreateAssocTileCollection([
-            $this->picks,
-            $this->factory->createAssocTileCollection($extraPicks->all()),
-        ]);
     }
 
     /**
@@ -112,27 +79,13 @@ class Conquerer
      */
     protected function initializeQueues()
     {
-        foreach ($this->picks->all() as $pick) {
-            $this->handleTile($pick->getX(), $pick->getY(), $pick->getUser());
-        }
-    }
+        foreach ($this->users as $user) {
+            $userId = $user->getId();
 
-    /**
-     * Get the users from the picks.
-     *
-     * @return Collection
-     */
-    protected function getUsersFromPicks()
-    {
-        $users = collect();
-
-        foreach ($this->picks->all() as $pick) {
-            if ( ! $users->has($pick->getUser()->getId())) {
-                $users->put($pick->getUser()->getId(), $pick->getUser());
+            foreach ($this->pickedTiles[$userId] as $pick) {
+                $this->handleTile($pick[0], $pick[1], $user);
             }
         }
-
-        return $users;
     }
 
     /**
@@ -171,11 +124,18 @@ class Conquerer
      */
     protected function handleTile($tileX, $tileY, UserInterface $user)
     {
-        if ($this->pickableRepository->isPickable($tileX, $tileY, $user) && $this->isDiscovered($tileX, $tileY) === false) {
-            if ($this->grid->getStateAt($tileX, $tileY) === 'empty') {
+        $tile = $this->game->getTileAt($tileX, $tileY);
+
+        if (
+            $tile !== null
+            && $this->isDiscovered($tileX, $tileY) === false
+            && $tile->getConquerer() == null
+            && $tile->getState() === 'empty'
+        ) {
+            if ($tile->getNearbyMineCount() === 0) {
                 $this->discoverTile($tileX, $tileY, $user);
                 $this->enqueue($user, $tileX, $tileY);
-            } else if (preg_match('/^nearby_\d+$/', $this->grid->getStateAt($tileX, $tileY))) {
+            } else {
                 $this->discoverTile($tileX, $tileY, $user);
             }
         }
