@@ -2,10 +2,11 @@
 
 namespace App\Providers;
 
-use App\Services\MMGame\Factory;
+use App\Mmg\Contracts\FactoryInterface;
+use App\Mmg\Factory;
 use Illuminate\Support\ServiceProvider;
 
-class MultiplayerMinesweeperProvider extends ServiceProvider
+class MmgServiceProvider extends ServiceProvider
 {
     /**
      * Register services.
@@ -14,7 +15,7 @@ class MultiplayerMinesweeperProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(Factory::class);
+        $this->app->singleton(FactoryInterface::class, Factory::class);
     }
 
     /**
