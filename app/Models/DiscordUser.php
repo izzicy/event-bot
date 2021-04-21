@@ -16,6 +16,13 @@ class DiscordUser extends Model implements UserInterface
     use HasUserTrait;
 
     /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [];
+
+    /**
      * Load the user if they're missing.
      *
      * @param Discord $discord
@@ -45,6 +52,19 @@ class DiscordUser extends Model implements UserInterface
 
             return $user;
         });
+    }
+
+    /**
+     * Set the user instance.
+     *
+     * @param UserInterface $user
+     * @return $this
+     */
+    public function setUser(UserInterface $user)
+    {
+        $this->user = $user;
+
+        return $this;
     }
 
     /**
