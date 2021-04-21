@@ -9,6 +9,20 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Game extends Model implements GameInterface
 {
     /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'mmg';
+
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [];
+
+    /**
      * The attributes that should be cast to native types.
      *
      * @var array
@@ -16,13 +30,6 @@ class Game extends Model implements GameInterface
     protected $casts = [
         'initialized' => 'boolean',
     ];
-
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'mmg';
 
     /** @inheritDoc */
     public function getWidth()
@@ -73,7 +80,7 @@ class Game extends Model implements GameInterface
      */
     public function tiles()
     {
-        return $this->hasMany(Tile::class, 'game_id');
+        return $this->hasMany(Tile::class, 'mmg_id');
     }
 
     /** @inheritDoc */

@@ -11,12 +11,22 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Tile extends Model implements TileInterface
 {
+    const UPDATED_AT = null;
+    const CREATED_AT = null;
+
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'mmg_tile';
+    protected $table = 'mmg_tiles';
+
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [];
 
     /** @inheritDoc */
     public function getGame()
