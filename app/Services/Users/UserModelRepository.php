@@ -16,11 +16,13 @@ class UserModelRepository
     public function retrieveFromInstance(UserInterface $user)
     {
         if ($discordUser = DiscordUser::find($user->getId())) {
-            return $discordUser;
+            return $discordUser->setUser($user);
         }
 
-        $discordUser = DiscordUser::forceCreate([
+        $discordUser = DiscordUser::force([
             'id' => $discordUser->getId(),
         ]);
+
+        return $discordUser->setUser($user);
     }
 }
