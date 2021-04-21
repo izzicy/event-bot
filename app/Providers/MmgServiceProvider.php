@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Mgg\GameRepository;
+use App\Mmg\GameRepository;
 use App\Mmg\Contracts\FactoryInterface;
 use App\Mmg\Factory;
 use Illuminate\Support\ServiceProvider;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Mgg;
+namespace App\Mmg;
 
 use App\Mmg\Models\Game;
 use App\Mmg\Models\Tile;
