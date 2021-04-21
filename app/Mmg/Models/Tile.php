@@ -4,6 +4,7 @@ namespace App\Mmg\Models;
 
 use App\Mmg\Contracts\TileInterface;
 use App\Models\DiscordUser;
+use App\Services\Users\UserModelRepository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -66,7 +67,9 @@ class Tile extends Model implements TileInterface
     /** @inheritDoc */
     public function setConquerer($user)
     {
-        $this->conquerer; // TODO
+        $this->conquerer()->associate(
+            $this->getUserRepository()->retrieveFromInstance($user)
+        );
     }
 
     /** @inheritDoc */
@@ -78,13 +81,17 @@ class Tile extends Model implements TileInterface
     /** @inheritDoc */
     public function addFlagger($user)
     {
-
+        $this->flaggers()->attach(
+            $this->getUserRepository()->retrieveFromInstance($user)
+        );
     }
 
     /** @inheritDoc */
     public function removeFlagger($user)
     {
-
+        $this->flaggers()->detach(
+            $this->getUserRepository()->retrieveFromInstance($user)
+        );
     }
 
     /**
@@ -115,5 +122,15 @@ class Tile extends Model implements TileInterface
     public function flaggers()
     {
         return $this->belongsToMany(DiscordUser::class, 'mmg_tile_flagger', 'tile_id', 'user_id');
+    }
+
+    /**
+     * Get the user repository.
+     *
+     * @return UserModelRepository
+     */
+    protected function getUserRepository()
+    {
+        return app(UserModelRepository::class);
     }
 }
