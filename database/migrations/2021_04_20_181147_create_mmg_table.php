@@ -26,16 +26,16 @@ class CreateMmgTable extends Migration
         Schema::create('mmg_tiles', function(Blueprint $table) {
             $table->bigIncrements('id');
 
-            $table->integer('mgg_id');
+            $table->integer('mmg_id');
             $table->string('conquerer_id', 63)->nullable();
 
             $table->smallInteger('x');
             $table->smallInteger('y');
             $table->string('state', 15);
 
-            $table->index('mgg_id');
-            $table->index(['mgg_id', 'conquerer_id']);
-            $table->index(['mgg_id', 'state', 'conquerer_id']);
+            $table->index('mmg_id');
+            $table->index(['mmg_id', 'conquerer_id']);
+            $table->index(['mmg_id', 'state', 'conquerer_id']);
 
             $table->unique(['mmg_id', 'x', 'y']);
         });

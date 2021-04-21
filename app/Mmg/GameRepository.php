@@ -27,7 +27,7 @@ class GameRepository
         foreach (range(0, $width - 1) as $x) {
             foreach (range(0, $height - 1) as $y) {
                 $tiles[] = Tile::create([
-                    'mgg_id' => $game->getKey(),
+                    'mmg_id' => $game->getKey(),
                     'x'      => $x,
                     'y'      => $y,
                     'state'  => 'unknown',

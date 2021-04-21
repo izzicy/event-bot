@@ -176,7 +176,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\ChooseYourDoorProvider::class,
-        App\Providers\MultiplayerMinesweeperProvider::class,
+        App\Providers\MmgServiceProvider::class,
 
     ],
 
