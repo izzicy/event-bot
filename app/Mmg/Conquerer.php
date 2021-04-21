@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Services\MMGame;
+namespace App\Mmg;
 
 use App\Mmg\Contracts\GameInterface;
 use App\Mmg\Contracts\GameOperatorInterface;
 use App\Services\Users\UserInterface;
 
-class MineDistributer implements GameOperatorInterface
+class Conquerer implements GameOperatorInterface
 {
     /** @var GameInterface */
     protected $game;

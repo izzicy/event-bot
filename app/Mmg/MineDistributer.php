@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\MMGame;
+namespace App\Mmg;
 
 use App\Mmg\Contracts\GameOperatorInterface;
 
