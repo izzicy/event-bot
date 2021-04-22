@@ -6,7 +6,7 @@ use Intervention\Image\Filters\FilterInterface;
 use Intervention\Image\Image;
 use Intervention\Image\ImageManagerStatic;
 
-class ColorizeFromImageFilter extends FilterInterface
+class ColorizeFromImageFilter implements FilterInterface
 {
     /**
      * The image from which we colorize.
@@ -40,7 +40,7 @@ class ColorizeFromImageFilter extends FilterInterface
      */
     public function applyFilter(Image $image)
     {
-        list($r, $g, $b) = ImageUtil::getDominatingColor($image);
+        list($r, $g, $b) = ImageUtil::getDominatingColor($this->fromImage);
 
         $image->colorize(
             ($r - (255 / 2)) / (255 / 2) * $this->strength,
