@@ -26,6 +26,13 @@ class DiscordUser extends Model implements UserInterface
     protected $guarded = [];
 
     /**
+     * Indicates if the IDs are auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
+
+    /**
      * Load the user if they're missing.
      *
      * @param Discord $discord
