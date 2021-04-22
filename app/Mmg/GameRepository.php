@@ -62,11 +62,16 @@ class GameRepository
      */
     public function find($id)
     {
-        return Game::query()->with([
+        $game = Game::query()->with([
             'tiles',
             'tiles.conquerer',
             'tiles.flaggers',
-            'tiles.game',
         ])->whereKey($id)->first();
+
+        $game->tiles->each(function(Tile $tile) use ($game) {
+            $tile->setRelation('game', $game);
+        });
+
+        return $game;
     }
 }
