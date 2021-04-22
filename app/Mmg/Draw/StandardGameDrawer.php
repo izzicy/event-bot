@@ -21,12 +21,12 @@ class StandardGameDrawer extends AbstractGameDrawer
                 if ($state === 'empty') {
                     if ($conquerer = $tile->getConquerer()) {
                         $this->drawColoredSquareAt($x, $y, $conquerer);
+
+                        if ($tile->getNearbyMineCount() > 0) {
+                            $this->drawCountAt($x, $y, $tile->getNearbyMineCount());
+                        }
                     } else {
                         $this->drawEmptyTileAt($x, $y);
-                    }
-
-                    if ($tile->getNearbyMineCount() > 0) {
-                        $this->drawCountAt($x, $y, $tile->getNearbyMineCount());
                     }
                 } else if ($state === 'mine') {
                     if ($conquerer = $tile->getConquerer()) {
