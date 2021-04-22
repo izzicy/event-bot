@@ -2,11 +2,10 @@
 
 namespace App\Mmg\Commands;
 
-use App\Mmg\Contracts\GameOperatorInterface;
-use App\Mmg\Contracts\MessageHandlerInterface;
+use App\Mmg\Contracts\CommandInterface;
 use App\Services\Users\UserInterface;
 
-class UnflagCommand implements MessageHandlerInterface, GameOperatorInterface
+class UnflagCommand implements CommandInterface
 {
     /**
      * An associated array with coordinate picks and user ids as the key.

@@ -15,6 +15,9 @@ class DiscordUser extends Model implements UserInterface
 {
     use HasUserTrait;
 
+    const UPDATED_AT = null;
+    const CREATED_AT = null;
+
     /**
      * The attributes that aren't mass assignable.
      *

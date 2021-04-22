@@ -2,13 +2,12 @@
 
 namespace App\Mmg\Commands;
 
+use App\Mmg\Contracts\CommandInterface;
 use App\Mmg\Contracts\FactoryInterface;
 use App\Mmg\Contracts\GameInterface;
-use App\Mmg\Contracts\GameOperatorInterface;
-use App\Mmg\Contracts\MessageHandlerInterface;
 use App\Services\Users\UserInterface;
 
-class PickTileCommand implements MessageHandlerInterface, GameOperatorInterface
+class PickTileCommand implements CommandInterface
 {
     /** @var FactoryInterface */
     protected $factory;
@@ -132,5 +131,13 @@ class PickTileCommand implements MessageHandlerInterface, GameOperatorInterface
         $distributer = $this->factory->createMineDistributer(collect($picks)->flatten(1)->all(), $this->mineCount);
 
         $distributer->operateGame($game);
+
+        foreach ($game->getTiles() as $tile) {
+            if ($tile->getState() === 'unknown') {
+                $tile->setState('empty');
+            }
+        }
+
+        $game->initialize();
     }
 }

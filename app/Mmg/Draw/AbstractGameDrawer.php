@@ -38,7 +38,7 @@ abstract class AbstractGameDrawer implements DrawInterface
 
         $this->tile->resize($tileSize, $tileSize);
         $this->mine->resize($tileSize, $tileSize);
-        $this->canvas = ImageManagerStatic::canvas(0, 0);
+        $this->canvas = ImageManagerStatic::canvas(1, 1);
     }
 
     /**

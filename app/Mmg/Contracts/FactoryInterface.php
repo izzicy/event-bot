@@ -3,9 +3,18 @@
 namespace App\Mmg\Contracts;
 
 use App\Services\Users\UserInterface;
+use Discord\Parts\Channel\Message;
 
 interface FactoryInterface
 {
+    /**
+     * Create normalized messages from discord messages.
+     *
+     * @param Message[] $message
+     * @return UserMessageInterface[]
+     */
+    public function createMessagesFromDiscord($messages);
+
     /**
      * Create a mine distributer.
      *
@@ -23,4 +32,20 @@ interface FactoryInterface
      * @return GameOperatorInterface
      */
     public function createConquerer($picked, $users): GameOperatorInterface;
+
+    /**
+     * Create an aggregate tester.
+     *
+     * @param TesterInterface[] $testers
+     * @return TesterInterface
+     */
+    public function createAggregateTester($testers): TesterInterface;
+
+    /**
+     * Create an aggregate command.
+     *
+     * @param CommandInterface[] $commands
+     * @return CommandInterface
+     */
+    public function createAggregateCommand($commands): CommandInterface;
 }

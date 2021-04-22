@@ -3,6 +3,7 @@
 namespace App\Mmg\Models;
 
 use App\Mmg\Contracts\GameInterface;
+use App\Mmg\Contracts\TileInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -52,19 +53,27 @@ class Game extends Model implements GameInterface
     /** @inheritDoc */
     public function initialize()
     {
-        $this->intialize = true;
+        $this->initialized = true;
     }
 
     /** @inheritDoc */
     public function hasTileAt($x, $y)
     {
-        return $this->tiles->get($this->getIndex($x, $y)) != null;
+        return $this->getTileAt($x, $y) != null;
     }
 
     /** @inheritDoc */
     public function getTileAt($x, $y)
     {
-        return $this->tiles->get($this->getIndex($x, $y));
+        if ($x < 0 || $x >= $this->width) {
+            return null;
+        }
+
+        if ($y < 0 || $y >= $this->height) {
+            return null;
+        }
+
+        return $this->tiles[$this->getIndex($x, $y)];
     }
 
     /** @inheritDoc */

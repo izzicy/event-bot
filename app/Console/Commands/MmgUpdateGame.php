@@ -4,14 +4,22 @@ namespace App\Console\Commands;
 
 use App\Discord\DiscordCloseMiddleware;
 use App\Discord\OnDiscordReadyMiddleware;
+use App\Mmg\Commands\FlagCommand;
+use App\Mmg\Commands\PickTileCommand;
+use App\Mmg\Commands\UnflagCommand;
+use App\Mmg\Contracts\FactoryInterface;
+use App\Mmg\Draw\StandardGameDrawer;
+use App\Mmg\GameRepository;
 use App\Models\MultiplayerMinesweeper\MinesweeperGame;
 use App\Services\MMGame\Contracts\UserAssocTilesCollectionInterface;
 use App\Services\MMGame\Factory;
 use App\Services\Users\DiscordUserCollection;
+use App\Services\Users\Retrieval\Collector;
 use Closure;
 use Discord\Discord;
 use Illuminate\Console\Command;
 use Illuminate\Pipeline\Pipeline;
+use Intervention\Image\ImageManagerStatic;
 
 class MmgUpdateGame extends Command
 {
@@ -52,17 +60,38 @@ class MmgUpdateGame extends Command
 
         $channelId = $this->option('channel') ?? config('mmg.default-channel');
         $messageId = $this->argument('message');
-        $game = MinesweeperGame::find($this->argument('game'));
 
-        /** @var Factory */
-        $factory = app(Factory::class);
-        $drawer = $factory->createOpenDrawer($game);
+        /** @var GameRepository */
+        $gameRepository = app(GameRepository::class);
+
+        /** @var FactoryInterface */
+        $factory = app(FactoryInterface::class);
+
+        /** @var Collector */
+        $collector = app(Collector::class);
+
+        $game = $gameRepository->find($this->argument('game'));
+        $drawer = new StandardGameDrawer($factory);
+
+        $command = $factory->createAggregateCommand([
+            new PickTileCommand($factory, 10),
+            new FlagCommand(10),
+            new UnflagCommand(10),
+        ]);
 
         $pipelines = [
             new OnDiscordReadyMiddleware($discord),
 
+            // Load all users.
+            function($passable, Closure $next) use ($discord, $collector) {
+                $collector->getUsers()->loadUsersIfMissing($discord)->done(function() use ($next) {
+                    $next(null);
+                });
+                $collector->unsubscribe();
+            },
+
             // Get the user choices
-            function($passable, Closure $next) use ($discord, $messageId, $channelId, $game) {
+            function($passable, Closure $next) use ($discord, $messageId, $channelId) {
                 $channel = $discord->getChannel($channelId);
 
                 $channel->getMessageHistory([
@@ -73,45 +102,25 @@ class MmgUpdateGame extends Command
             },
 
             // Get the user choices
-            function($messages, Closure $next) use ($discord, $drawer, $channelId, $game, $factory) {
-                try {
-                    $parser = $factory->createUserCommandsParserFromDiscordMessages($messages, $game);
-                    $picks = $parser->createUserTilePicks();
+            function($discordMessages, Closure $next) use ($discord, $drawer, $command, $game, $factory, $channelId, $gameRepository) {
+                $messages = $factory->createMessagesFromDiscord($discordMessages);
 
-                    $this->initializeIfNotInitialized($game, $factory, $picks);
-
-                    $conqueredPicks = $factory->createConquerer($game, $game->grid, $picks)->getConqueredPicks();
-
-                    $game->createConqueredTilesFrom($conqueredPicks);
-
-                    $users = new DiscordUserCollection();
-
-                    $game->refresh();
-
-                    foreach ($game->conquered as $conquered) {
-                        $users->push($conquered->user);
-                    }
-
-                    $users->loadUsersIfMissing($discord)->done(function() use ($next) {
-                        $next(null);
-                    });
+                foreach ($messages as $message) {
+                    $command->handleMessage($message);
                 }
-                catch (\Throwable $e) {
-                    dd($e);
-                }
-            },
 
-            function($passable, $next) use ($discord, $drawer, $channelId, $game, $factory)  {
-                try {
-                    $channel = $discord->getChannel($channelId);
+                $command->operateGame($game);
 
-                    $channel->sendFile($drawer->draw())->done(function() use ($next) {
-                        $next(null);
-                    });
-                }
-                catch (\Throwable $e) {
-                    dd($e);
-                }
+                $gameRepository->persist($game);
+
+                $channel = $discord->getChannel($channelId);
+                $image = ImageManagerStatic::make($drawer->draw($game));
+                $path = tempnam(sys_get_temp_dir(), '') . '.png';
+                $image->save($path);
+
+                $channel->sendFile($path)->done(function() use ($next) {
+                    $next(null);
+                });
             },
 
             new DiscordCloseMiddleware($discord),
@@ -122,27 +131,5 @@ class MmgUpdateGame extends Command
             ->thenReturn();
 
         $discord->run();
-    }
-
-    /**
-     * Initalize the game if it hadn't initilized yet.
-     *
-     * @param MinesweeperGame $game
-     * @param Factory $factory
-     * @param UserAssocTilesCollectionInterface $picks
-     * @return void
-     */
-    protected function initializeIfNotInitialized(MinesweeperGame $game, Factory $factory, $picks)
-    {
-        if ($game->initialized === false) {
-            $game->initialized = true;
-            $game->save();
-
-            $distributer = $factory->createMineDistributer();
-
-            $distributer->distribute($game->grid, $picks, 10);
-
-            $game->grid->save();
-        }
     }
 }

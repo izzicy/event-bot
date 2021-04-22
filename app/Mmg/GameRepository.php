@@ -47,6 +47,10 @@ class GameRepository
     public function persist($game)
     {
         $game->save();
+
+        foreach ($game->tiles as $tile) {
+            $tile->save();
+        }
     }
 
     /**
@@ -57,6 +61,11 @@ class GameRepository
      */
     public function find($id)
     {
-        return Game::find($id);
+        return Game::query()->with([
+            'tiles',
+            'tiles.conquerer',
+            'tiles.flaggers',
+            'tiles.game',
+        ])->whereKey($id)->first();
     }
 }

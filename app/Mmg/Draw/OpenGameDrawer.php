@@ -7,17 +7,18 @@ class OpenGameDrawer extends AbstractGameDrawer
     /** @inheritdoc */
     public function draw($game)
     {
-        /** @var StateGridInterface */
-        $grid = $game->grid;
+        $width = $game->getWidth();
+        $height = $game->getHeight();
 
-        $width = $grid->getWidth();
-        $height = $grid->getHeight();
+        $this->game = $game;
+        $this->canvas = $this->createCanvas($width, $height);
 
         foreach (range(0, $width - 1) as $x) {
             foreach (range(0, $height - 1) as $y) {
-                $stateAtCoords = $grid->getStateAt($x, $y);
+                $tile = $game->getTileAt($x, $y);
+                $state = $tile->getState();
 
-                if ($stateAtCoords === 'mine') {
+                if ($state === 'mine') {
                     $this->drawMineAt($x, $y);
                 }
             }

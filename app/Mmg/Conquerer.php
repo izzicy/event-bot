@@ -130,9 +130,8 @@ class Conquerer implements GameOperatorInterface
             $tile !== null
             && $this->isDiscovered($tileX, $tileY) === false
             && $tile->getConquerer() == null
-            && $tile->getState() === 'empty'
         ) {
-            if ($tile->getNearbyMineCount() === 0) {
+            if ($tile->getNearbyMineCount() === 0 && $tile->getState() === 'empty') {
                 $this->discoverTile($tileX, $tileY, $user);
                 $this->enqueue($user, $tileX, $tileY);
             } else {

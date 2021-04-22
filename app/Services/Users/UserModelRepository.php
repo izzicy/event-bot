@@ -19,8 +19,8 @@ class UserModelRepository
             return $discordUser->setUser($user);
         }
 
-        $discordUser = DiscordUser::force([
-            'id' => $discordUser->getId(),
+        $discordUser = DiscordUser::create([
+            'id' => $user->getId(),
         ]);
 
         return $discordUser->setUser($user);

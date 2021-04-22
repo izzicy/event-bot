@@ -4,12 +4,14 @@ namespace App\Console\Commands;
 
 use App\Discord\DiscordCloseMiddleware;
 use App\Discord\OnDiscordReadyMiddleware;
-use App\Models\MultiplayerMinesweeper\MinesweeperGame;
-use App\Services\MMGame\Factory;
+use App\Mmg\Contracts\FactoryInterface;
+use App\Mmg\Draw\StandardGameDrawer;
+use App\Mmg\GameRepository;
 use Closure;
 use Discord\Discord;
 use Illuminate\Console\Command;
 use Illuminate\Pipeline\Pipeline;
+use Intervention\Image\ImageManagerStatic;
 
 class MmgNewGame extends Command
 {
@@ -50,14 +52,18 @@ class MmgNewGame extends Command
 
         $channelId = $this->option('channel') ?? config('mmg.default-channel');
 
-        $game = MinesweeperGame::createNewGame(
+        /** @var GameRepository */
+        $gameRepository = app(GameRepository::class);
+
+        /** @var FactoryInterface */
+        $factory = app(FactoryInterface::class);
+
+        $game = $gameRepository->create(
             $this->argument('width'),
             $this->argument('height')
         );
 
-        /** @var Factory */
-        $factory = app(Factory::class);
-        $drawer = $factory->createStandardDrawer($game);
+        $drawer = new StandardGameDrawer($factory);
 
         $pipelines = [
             new OnDiscordReadyMiddleware($discord),
@@ -66,9 +72,13 @@ class MmgNewGame extends Command
             function($passable, Closure $next) use ($discord, $drawer, $channelId, $game) {
                 $channel = $discord->getChannel($channelId);
 
-                $channel->sendFile($drawer->draw())->done(function() use ($next) {
+                $image = ImageManagerStatic::make($drawer->draw($game));
+                $path = tempnam(sys_get_temp_dir(), '') . '.png';
+                $image->save($path);
+
+                $channel->sendFile($path)->done(function() use ($next) {
                     $next(null);
-                });;
+                });
             },
 
             new DiscordCloseMiddleware($discord),

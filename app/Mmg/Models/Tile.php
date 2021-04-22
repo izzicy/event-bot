@@ -14,6 +14,17 @@ class Tile extends Model implements TileInterface
     const UPDATED_AT = null;
     const CREATED_AT = null;
 
+    /** @return void */
+    protected static function boot()
+    {
+        parent::boot();
+
+        self::addGlobalScope(function($query) {
+            $query->orderBy('y');
+            $query->orderBy('x');
+        });
+    }
+
     /**
      * The table associated with the model.
      *
@@ -55,10 +66,12 @@ class Tile extends Model implements TileInterface
 
         foreach (range(-1, 1) as $x) {
             foreach (range(-1, 1) as $y) {
+                $tile = $game->getTileAt((int)$this->x + $x, (int)$this->y + $y);
+
                 if (
-                    $game->hasTileAt($x, $y)
+                    $tile != null
                     && ($x === 0 && $y === 0) === false
-                    && $game->getTileAt($x, $y) === 'mine'
+                    && $tile->getState() === 'mine'
                 ) {
                     $mineCount += 1;
                 }
