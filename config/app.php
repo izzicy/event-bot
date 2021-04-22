@@ -177,6 +177,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         App\Providers\ChooseYourDoorProvider::class,
         App\Providers\MmgServiceProvider::class,
+        App\Providers\InterventionServiceProvider::class,
 
     ],
 
