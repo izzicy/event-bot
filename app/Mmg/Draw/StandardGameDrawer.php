@@ -37,6 +37,8 @@ class StandardGameDrawer extends AbstractGameDrawer
                 } else if ($state === 'unknown') {
                     $this->drawEmptyTileAt($x, $y);
                 }
+
+                $this->drawFlaggersAt($x, $y ,$tile->getFlaggers());
             }
         }
 

@@ -5,6 +5,7 @@ namespace App\Mmg\Draw;
 use App\Mmg\Contracts\DrawInterface;
 use App\Mmg\Contracts\FactoryInterface;
 use App\Services\Users\UserInterface;
+use App\Util\Intervention\ColorizeFromImageFilter;
 use App\Util\Intervention\ImageUtil;
 use Intervention\Image\Image;
 use Intervention\Image\ImageManagerStatic;
@@ -18,10 +19,19 @@ abstract class AbstractGameDrawer implements DrawInterface
     protected $tile;
 
     /** @var Image */
+    protected $flag;
+
+    /** @var Image */
     protected $mine;
 
     /** @var Image */
     protected $canvas;
+
+    /** @var array */
+    protected $userColorCache = [];
+
+    /** @var array */
+    protected $flagCache = [];
 
     /**
      * Drawer constructor.
@@ -32,6 +42,7 @@ abstract class AbstractGameDrawer implements DrawInterface
     {
         $this->factory = $factory;
         $this->tile = ImageManagerStatic::make(config('mmg.tile-image-path'));
+        $this->flag = ImageManagerStatic::make(config('mmg.flag-image-path'));
         $this->mine = ImageManagerStatic::make(config('mmg.mine-image-path'));
 
         $tileSize = $this->getTileSize();
@@ -68,10 +79,8 @@ abstract class AbstractGameDrawer implements DrawInterface
     /**
      * Draw a colored square at.
      *
-     * @param Image $canvas
      * @param int $x
      * @param int $y
-     * @param int $tileSize
      * @param UserInterface $user
      * @return void
      */
@@ -92,6 +101,52 @@ abstract class AbstractGameDrawer implements DrawInterface
             ($x * $tileSize) + 1,
             ($y * $tileSize) + 1
         );
+    }
+
+    /**
+     * Draw a colored square at.
+     *
+     * @param int $x
+     * @param int $y
+     * @param UserInterface[] $flaggers
+     * @return void
+     */
+    protected function drawFlaggersAt($x, $y, $flaggers)
+    {
+        $tileSize = $this->getTileSize();
+        $canvas   = $this->canvas;
+        $columns  = 4;
+        $size     = round($this->getTileSize() / $columns + 1);
+        $padding  = round($this->getTileSize() / ($columns + 1) / $columns);
+
+
+        foreach ($flaggers as $key => $flagger) {
+            if ( ! isset($this->flagCache[$flagger->getId()])) {
+                $flag = clone $this->flag;
+
+                $colorizer = app(ColorizeFromImageFilter::class, [
+                    'image' => ImageManagerStatic::make($flagger->getAvatar()),
+                    'strength' => 60,
+                ]);
+
+                $flag = $colorizer->applyFilter($flag);
+                $flag->resize($size, $size);
+
+                $this->flagCache[$flagger->getId()] = $flag;
+            }
+
+            $flag = $this->flagCache[$flagger->getId()];
+
+            $offsetX = ($key % $columns) * ($size + $padding) + $padding;
+            $offsetY = floor($key / $columns) * ($size + $padding) + $padding;
+
+            $canvas->insert(
+                $flag,
+                'top-left',
+                ($x * $tileSize) + $offsetX,
+                ($y * $tileSize) + $offsetY
+            );
+        }
     }
 
     /**
