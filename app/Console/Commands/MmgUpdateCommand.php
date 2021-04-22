@@ -21,14 +21,14 @@ use Illuminate\Console\Command;
 use Illuminate\Pipeline\Pipeline;
 use Intervention\Image\ImageManagerStatic;
 
-class MmgUpdateGame extends Command
+class MmgUpdateCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'mmg:update-game {game} {message} {--channel=}';
+    protected $signature = 'mmg:update {game} {message} {--channel=}';
 
     /**
      * The console command description.

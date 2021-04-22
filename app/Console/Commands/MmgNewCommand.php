@@ -13,14 +13,14 @@ use Illuminate\Console\Command;
 use Illuminate\Pipeline\Pipeline;
 use Intervention\Image\ImageManagerStatic;
 
-class MmgNewGame extends Command
+class MmgNewCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'mmg:new-game {width} {height} {--channel=}';
+    protected $signature = 'mmg:new {width} {height} {--channel=}';
 
     /**
      * The console command description.
