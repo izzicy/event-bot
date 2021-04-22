@@ -9,5 +9,6 @@ return [
     'tile-image-path' => storage_path('app/mmg/out-tile.png'),
     'mine-image-path' => storage_path('app/mmg/mine.png'),
     'flag-image-path' => storage_path('app/mmg/flag.png'),
+    'ui-image-path' => storage_path('app/mmg/ui.png'),
     'font-path' => storage_path('app/mmg/font.ttf'),
 ];
