@@ -104,7 +104,7 @@ class Tile extends Model implements TileInterface
     /** @inheritDoc */
     public function addFlagger($user)
     {
-        $this->flaggers()->attach(
+        $this->flaggers()->syncWithoutDetaching(
             $this->getUserRepository()->retrieveFromInstance($user)
         );
     }
