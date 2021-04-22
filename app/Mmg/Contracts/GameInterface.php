@@ -26,6 +26,13 @@ interface GameInterface
     public function hasInitialized();
 
     /**
+     * Get the mine count.
+     *
+     * @return int
+     */
+    public function getMineCount();
+
+    /**
      * Set the initialized status to true.
      *
      * @return void

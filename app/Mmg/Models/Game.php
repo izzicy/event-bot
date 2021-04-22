@@ -57,6 +57,12 @@ class Game extends Model implements GameInterface
     }
 
     /** @inheritDoc */
+    public function getMineCount()
+    {
+        return $this->mines;
+    }
+
+    /** @inheritDoc */
     public function hasTileAt($x, $y)
     {
         return $this->getTileAt($x, $y) != null;

@@ -17,6 +17,7 @@ class CreateMmgTable extends Migration
             $table->increments('id');
 
             $table->boolean('initialized')->default(0);
+            $table->integer('mines');
             $table->smallInteger('width');
             $table->smallInteger('height');
 
@@ -43,6 +44,9 @@ class CreateMmgTable extends Migration
         Schema::create('mmg_tile_flagger', function(Blueprint $table) {
             $table->bigInteger('tile_id');
             $table->string('user_id', 63);
+
+            $table->primary(['tile_id', 'user_id']);
+            $table->unique(['user_id', 'tile_id']);
         });
     }
 

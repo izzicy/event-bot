@@ -74,9 +74,9 @@ class MmgUpdateCommand extends Command
         $drawer = new StandardGameDrawer($factory);
 
         $command = $factory->createAggregateCommand([
-            new PickTileCommand($factory, 10),
-            new FlagCommand(10),
-            new UnflagCommand(10),
+            new PickTileCommand($factory),
+            new FlagCommand(),
+            new UnflagCommand(),
         ]);
 
         $pipelines = [

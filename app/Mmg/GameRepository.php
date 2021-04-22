@@ -15,11 +15,12 @@ class GameRepository
      * @param int $height
      * @return GameInterface
      */
-    public function create($width, $height): Game
+    public function create($width, $height, $minecount): Game
     {
         $game = Game::create([
             'width' => $width,
             'height' => $height,
+            'mines' => $minecount,
         ]);
 
         $tiles = new Collection();

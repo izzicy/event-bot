@@ -12,9 +12,6 @@ class PickTileCommand implements CommandInterface
     /** @var FactoryInterface */
     protected $factory;
 
-    /** @var int */
-    protected $mineCount;
-
     /**
      * An associated array with coordinate picks and user ids as the key.
      *
@@ -40,12 +37,10 @@ class PickTileCommand implements CommandInterface
      * Pick tile command constructor.
      *
      * @param FactoryInterface $factory
-     * @param int $mineCount
      */
-    public function __construct(FactoryInterface $factory, $mineCount)
+    public function __construct(FactoryInterface $factory)
     {
         $this->factory = $factory;
-        $this->mineCount = $mineCount;
     }
 
     /** @inheritdoc */
@@ -128,7 +123,7 @@ class PickTileCommand implements CommandInterface
      */
     protected function initializeGame($game, $picks)
     {
-        $distributer = $this->factory->createMineDistributer(collect($picks)->flatten(1)->all(), $this->mineCount);
+        $distributer = $this->factory->createMineDistributer(collect($picks)->flatten(1)->all(), $game->getMineCount());
 
         $distributer->operateGame($game);
 

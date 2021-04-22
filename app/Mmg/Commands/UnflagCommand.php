@@ -28,16 +28,6 @@ class UnflagCommand implements CommandInterface
      */
     protected $maxPicks = INF;
 
-    /**
-     * Pick tile command constructor.
-     *
-     * @param int $mineCount
-     */
-    public function __construct($mineCount)
-    {
-        $this->mineCount = $mineCount;
-    }
-
     /** @inheritdoc */
     public function handleMessage($message)
     {

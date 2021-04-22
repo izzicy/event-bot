@@ -20,7 +20,7 @@ class MmgNewCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'mmg:new {width} {height} {--channel=}';
+    protected $signature = 'mmg:new {width} {height} {minecount} {--channel=}';
 
     /**
      * The console command description.
@@ -60,7 +60,8 @@ class MmgNewCommand extends Command
 
         $game = $gameRepository->create(
             $this->argument('width'),
-            $this->argument('height')
+            $this->argument('height'),
+            $this->argument('minecount')
         );
 
         $drawer = new StandardGameDrawer($factory);
