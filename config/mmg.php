@@ -10,7 +10,7 @@ return [
      * The penalty upon a wrong move.
      */
 
-    'move-penalty' => 2,
+    'move-penalty' => 1,
 
     /**
      * The penalty upon a wrong move.
@@ -22,7 +22,7 @@ return [
      * The defualt number of user moves.
      */
 
-    'default-user-moves' => 10,
+    'default-user-moves' => 5,
 
     /**
      * Image paths.
