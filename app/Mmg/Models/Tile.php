@@ -104,19 +104,25 @@ class Tile extends Model implements TileInterface
     /** @inheritDoc */
     public function addFlagger($user)
     {
-        $this->flaggers()->sync(
-            $this->flaggers->merge([
-                $this->getUserRepository()->retrieveFromInstance($user)
-            ])
-        );
+        $flaggers = $this->flaggers->merge([
+            $this->getUserRepository()->retrieveFromInstance($user)
+        ])->unique();
+
+        $this->flaggers()->sync($flaggers);
+
+        $this->setRelation('flaggers', $flaggers);
     }
 
     /** @inheritDoc */
     public function removeFlagger($user)
     {
-        $this->flaggers()->detach(
-            $this->getUserRepository()->retrieveFromInstance($user)
-        );
+        $flaggers = $this->flaggers->filter(function($flagger) use ($user) {
+            return $flagger->getKey() !== $user->getId();
+        });
+
+        $this->flaggers()->sync($flaggers);
+
+        $this->setRelation('flaggers', $flaggers);
     }
 
     /**
