@@ -9,11 +9,8 @@ use App\Mmg\Commands\PickTileCommand;
 use App\Mmg\Commands\UnflagCommand;
 use App\Mmg\Contracts\FactoryInterface;
 use App\Mmg\Draw\StandardGameDrawer;
+use App\Mmg\Draw\UiDrawer;
 use App\Mmg\GameRepository;
-use App\Models\MultiplayerMinesweeper\MinesweeperGame;
-use App\Services\MMGame\Contracts\UserAssocTilesCollectionInterface;
-use App\Services\MMGame\Factory;
-use App\Services\Users\DiscordUserCollection;
 use App\Services\Users\Retrieval\Collector;
 use Closure;
 use Discord\Discord;
@@ -71,7 +68,6 @@ class MmgUpdateCommand extends Command
         $collector = app(Collector::class);
 
         $game = $gameRepository->find($this->argument('game'));
-        $drawer = new StandardGameDrawer($factory);
 
         $command = $factory->createAggregateCommand([
             new PickTileCommand($factory),
@@ -102,7 +98,7 @@ class MmgUpdateCommand extends Command
             },
 
             // Get the user choices
-            function($discordMessages, Closure $next) use ($discord, $drawer, $command, $game, $factory, $channelId, $gameRepository) {
+            function($discordMessages, Closure $next) use ($command, $game, $factory, $gameRepository) {
                 $messages = $factory->createMessagesFromDiscord($discordMessages);
 
                 foreach ($messages as $message) {
@@ -112,6 +108,27 @@ class MmgUpdateCommand extends Command
                 $command->operateGame($game);
 
                 $gameRepository->persist($game);
+
+                $next(null);
+            },
+
+            // Get the user choices
+            function($passable, Closure $next) use ($discord, $game, $factory, $channelId) {
+                $drawer = new UiDrawer($factory);
+
+                $channel = $discord->getChannel($channelId);
+                $image = ImageManagerStatic::make($drawer->draw($game));
+                $path = tempnam(sys_get_temp_dir(), '') . '.png';
+                $image->save($path);
+
+                $channel->sendFile($path)->done(function() use ($next) {
+                    $next(null);
+                });
+            },
+
+            // Get the user choices
+            function($passable, Closure $next) use ($discord, $game, $factory, $channelId) {
+                $drawer = new StandardGameDrawer($factory);
 
                 $channel = $discord->getChannel($channelId);
                 $image = ImageManagerStatic::make($drawer->draw($game));

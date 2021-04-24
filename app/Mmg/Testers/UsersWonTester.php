@@ -10,11 +10,16 @@ class UsersWonTester implements TesterInterface
     /** @var bool */
     protected $allTaken = true;
 
-    /** @var array */
-    protected $countsPerUser = [];
+    /** @var UserScoreTester */
+    protected $userScoreTester;
 
-    /** @var UserInterface[] */
-    protected $users = [];
+    /**
+     * Construct a new users won tester.
+     */
+    public function __construct()
+    {
+        $this->userScoreTester = new UserScoreTester;
+    }
 
     /** @inheritDoc */
     public function testTile($tile)
@@ -26,16 +31,7 @@ class UsersWonTester implements TesterInterface
             $this->allTaken = false;
         }
 
-        if ($conquerer !== null) {
-            $conquererId = $conquerer->getId();
-
-            if (empty($this->countsPerUser[$conquererId])) {
-                $this->users[] = $conquerer;
-                $this->countsPerUser[$conquererId] = 0;
-            }
-
-            $this->countsPerUser[$conquererId] += 1;
-        }
+        $this->userScoreTester->testTile($tile);
     }
 
     /**
@@ -55,8 +51,19 @@ class UsersWonTester implements TesterInterface
      */
     public function getUsersInOrder()
     {
-        return collect($this->users)->sortByDesc(function(UserInterface $user) {
-            return $this->countsPerUser[$user->getId()];
+        return collect($this->userScoreTester->getUsers())->sortByDesc(function(UserInterface $user) {
+            return $this->userScoreTester->getScoreCount($user);
         });
+    }
+
+    /**
+     * Get the score count of the given user.
+     *
+     * @param UserInterface $user
+     * @return int
+     */
+    public function getScoreCount($user)
+    {
+        return $this->userScoreTester->getScoreCount($user);
     }
 }

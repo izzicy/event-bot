@@ -5,6 +5,7 @@ namespace App\Mmg\Commands;
 use App\Mmg\Contracts\CommandInterface;
 use App\Mmg\Contracts\FactoryInterface;
 use App\Mmg\Contracts\GameInterface;
+use App\Mmg\Testers\UserMovesTester;
 use App\Services\Users\UserInterface;
 
 class PickTileCommand implements CommandInterface
@@ -25,13 +26,6 @@ class PickTileCommand implements CommandInterface
      * @var UserInterface[]
      */
     protected $users = [];
-
-    /**
-     * The maximum number of picks allowed.
-     *
-     * @var int
-     */
-    protected $maxPicks = INF;
 
     /**
      * Pick tile command constructor.
@@ -84,16 +78,22 @@ class PickTileCommand implements CommandInterface
     protected function retrieveValidPicks($game)
     {
         $validPicks = [];
+        $userMovesTester = new UserMovesTester;
+
+        foreach ($game->getTiles() as $tile) {
+            $userMovesTester->testTile($tile);
+        }
 
         foreach ($this->users as $user) {
             $userId = $user->getId();
+            $maxPicks = $userMovesTester->getNumberOfMoves($user);
 
             foreach ($this->picks[$userId] as $pick) {
                 if (empty($validPicks[$userId])) {
                     $validPicks[$userId] = [];
                 }
 
-                if (count($validPicks[$userId]) > $this->maxPicks) {
+                if (count($validPicks[$userId]) > $maxPicks) {
                     continue;
                 }
 
