@@ -17,7 +17,7 @@ class MmgTest extends TestCase
         $width = $this->faker->numberBetween(4, 5);
         $height = $this->faker->numberBetween(4, 5);
 
-        $game = app(GameRepository::class)->create($width, $height);
+        $game = app(GameRepository::class)->create($width, $height, 0);
 
         $this->assertEquals($game->tiles->count(), $width * $height);
 
@@ -35,7 +35,7 @@ class MmgTest extends TestCase
         $height = $this->faker->numberBetween(4, 5);
         $mineCount = $this->faker->numberBetween(4, 14);
 
-        $game = app(GameRepository::class)->create($width, $height);
+        $game = app(GameRepository::class)->create($width, $height, $mineCount);
 
         /** @var FactoryInterface */
         $factory = app(FactoryInterface::class);
