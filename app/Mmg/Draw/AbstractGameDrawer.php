@@ -216,7 +216,7 @@ abstract class AbstractGameDrawer implements DrawInterface
 
         $this->canvas->text($count, round($x * $tileSize + $tileSize * 0.5), round($y * $tileSize + $tileSize * 0.5), function($font) {
             $font->file(config('mmg.font-path'));
-            $font->size(13);
+            $font->size(20);
             $font->color('#fffff');
             $font->align('center');
             $font->valign('middle');
@@ -237,14 +237,14 @@ abstract class AbstractGameDrawer implements DrawInterface
 
         $canvas->text($x, round($x * $tileSize + $tileSize * 0.25), round($y * $tileSize + $tileSize * 0.25), function($font) {
             $font->file(config('mmg.font-path'));
-            $font->size(13);
+            $font->size(17);
             $font->color('#fffff');
             $font->align('center');
             $font->valign('top');
         });
         $canvas->text($y, round($x * $tileSize + $tileSize * 0.75), round($y * $tileSize + $tileSize * 0.75), function($font) {
             $font->file(config('mmg.font-path'));
-            $font->size(13);
+            $font->size(17);
             $font->color('#fffff');
             $font->align('center');
             $font->valign('bottom');
