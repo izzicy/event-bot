@@ -55,6 +55,6 @@ class UserScoreTester implements TesterInterface
      */
     public function getScoreCount($user)
     {
-        return $this->countsPerUser[$user ? $user->getId() : -1] ?? 0;
+        return $this->countsPerUser[$user->getId()] ?? 0;
     }
 }

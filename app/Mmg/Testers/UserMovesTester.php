@@ -54,6 +54,6 @@ class UserMovesTester implements TesterInterface
      */
     public function getNumberOfMoves($user)
     {
-        return $this->countsPerUser[$user ? $user->getId() : -1] ?? 0;
+        return $this->countsPerUser[$user->getId()] ?? config('mmg.default-user-moves');
     }
 }
