@@ -97,7 +97,7 @@ class MmgUpdateCommand extends Command
                 });
             },
 
-            // Get the user choices
+            // Interpret the user choices.
             function($discordMessages, Closure $next) use ($command, $game, $factory, $gameRepository) {
                 $messages = $factory->createMessagesFromDiscord($discordMessages);
 
