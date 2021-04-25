@@ -177,7 +177,9 @@ return [
         App\Providers\RouteServiceProvider::class,
         App\Providers\ChooseYourDoorProvider::class,
         App\Providers\MmgServiceProvider::class,
+        App\Providers\ZdgServiceProvider::class,
         App\Providers\InterventionServiceProvider::class,
+        App\Providers\DiscordServiceProvider::class,
 
     ],
 
