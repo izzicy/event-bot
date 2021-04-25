@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Mmg\Contracts;
+namespace App\Services\Messages\Contracts;
 
-use App\Services\Users\DiscordUser;
+use App\Services\Users\UserInterface;
 
 interface UserMessageInterface
 {
     /**
      * Get the user of this message.
      *
-     * @return DiscordUser
+     * @return UserInterface
      */
     public function getUser();
 

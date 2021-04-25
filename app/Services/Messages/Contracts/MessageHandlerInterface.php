@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Mmg\Contracts;
+namespace App\Services\Messages\Contracts;
 
 interface MessageHandlerInterface
 {

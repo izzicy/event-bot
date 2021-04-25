@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Mmg;
+namespace App\Services\Messages;
 
-use App\Mmg\Contracts\UserMessageInterface;
+use App\Services\Messages\Contracts\UserMessageInterface;
 use App\Services\Users\DiscordUser;
 use Discord\Parts\Channel\Message;
 use Discord\Parts\User\Member;
 
-class UserMessage implements UserMessageInterface
+class DiscordUserMessage implements UserMessageInterface
 {
     /** @var Message */
     protected $message;

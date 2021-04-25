@@ -2,6 +2,7 @@
 
 namespace App\Mmg\Contracts;
 
+use App\Services\Messages\Contracts\UserMessageInterface;
 use App\Services\Users\UserInterface;
 use Discord\Parts\Channel\Message;
 

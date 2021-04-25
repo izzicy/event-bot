@@ -8,6 +8,7 @@ use App\Mmg\Contracts\FactoryInterface;
 use App\Mmg\Contracts\GameOperatorInterface;
 use App\Mmg\Contracts\TesterInterface;
 use App\Mmg\Testers\AggregateTester;
+use App\Services\Messages\Factory as MessagesFactory;
 
 class Factory implements FactoryInterface
 {
@@ -15,7 +16,7 @@ class Factory implements FactoryInterface
     public function createMessagesFromDiscord($messages)
     {
         return collect($messages)->map(function($message) {
-            return new UserMessage($message);
+            return app(MessagesFactory::class)->createMessageFromDiscord($message);
         })->all();
     }
 
