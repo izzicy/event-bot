@@ -21,7 +21,7 @@ class ZdgUpdateCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'zdg:update {game} {message} {--channel=}';
+    protected $signature = 'zdg:update {game} {--message=} {--channel=}';
 
     /**
      * The console command description.
@@ -51,8 +51,8 @@ class ZdgUpdateCommand extends Command
             'token' => config('discord.token'),
         ]);
 
-        $channelId = $this->option('channel') ?? config('mmg.default-channel');
-        $messageId = $this->argument('message');
+        $channelId = $this->option('channel') ?? config('zdg.default-channel');
+        $messageId = $this->option('message');
 
         $game = Game::find($this->argument('game'));
 
@@ -63,19 +63,21 @@ class ZdgUpdateCommand extends Command
             function($passable, Closure $next) use ($discord, $messageId, $channelId) {
                 $channel = $discord->getChannel($channelId);
 
-                $channel->getMessageHistory([
-                    'after' => $messageId,
-                ])->done(function($messages) use ($next) {
+                $options = [];
+
+                if ($messageId) {
+                    $options['after'] = $messageId;
+                }
+
+                $channel->getMessageHistory($options)->done(function($messages) use ($next) {
                     $next($messages);
                 });
             },
 
             // Interpret the user choices.
-            function($discordMessages, Closure $next) use ($game) {
+            function($discordMessages, Closure $next) use ($game, $discord) {
                 try {
-                    $messages = collect($discordMessages)->reverse()->map(function($message) {
-                        return app(Factory::class)->createMessageFromDiscord($message);
-                    });
+                    $messages = app(Factory::class)->createFromDirectResponses($discordMessages, $discord->id);
 
                     $command = new PixelColourerCommand();
 

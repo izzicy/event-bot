@@ -13,7 +13,7 @@ return [
     /**
      * The default size of a pixel.
      */
-    'pixel-size' => 5,
+    'pixel-size' => 7,
 
     /**
      * All colour aliases.

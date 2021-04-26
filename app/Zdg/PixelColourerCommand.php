@@ -40,38 +40,10 @@ class PixelColourerCommand implements MessageHandlerInterface
         $user = $message->getUser();
         $content = $message->getMessage();
 
-        // /(colour|color|paint|pixel)(\s+(?P<x>\d+)(,|\s)+(?P<y>\d+)\s+(?P<modifier>dark|light)?\s*(?P<choices>[a-z0-9 #]+)\s*,?)+/i
-        // /(colour|color|paint|pixel)(\s+\d+(,|\s)+\d+\s+(dark|light)?\s*[a-z0-9 #]+\s*,?)+/i
+        $lines = explode("\n", $content);
 
-        if (preg_match_all('/(?P<commands>(colour|color|paint|pixel)(\s+\d+(,|\s)+\d+\s+(dark|light)?\s*[a-z0-9 #]+ *(,( and)?)?)+)/i', $content, $matches)) {
-            foreach ($matches['commands'] as $command) {
-                preg_match_all('/(?P<x>\d+)(,|\s)+(?P<y>\d+)\s+(?P<modifier>dark|light)?\s*(?P<choices>[a-z0-9 #]+) *(,( and)?)?/i', $command, $matches);
-
-                foreach ($matches['choices'] as $key => $choice) {
-                    $modifier = $matches['modifier'][$key];
-
-                    // substract one since counting for the user starts at one
-                    $x = $matches['x'][$key] - 1;
-                    $y = - $matches['y'][$key];
-
-                    $this->paintPixel($user, $modifier, $x, $y, $choice);
-                }
-            }
-        } else if (preg_match_all('/(?P<commands>(colour|color|paint|pixel)(\s+\d+(,|\s)+\d+ *,?( and)?)+ +(?P<modifier>dark|light)?\s*(?P<choice>[a-z0-9 #]+))/i', $content, $matches)) {
-            foreach ($matches['commands'] as $key => $command) {
-                $modifier = $matches['modifier'][$key];
-                $choice = $matches['choice'][$key];
-
-                preg_match_all('/(?P<x>\d+)(,|\s)+(?P<y>\d+) *(,( and)?)?/i', $command, $matches);
-
-                foreach ($matches['x'] as $key => $x) {
-                    // substract one since counting for the user starts at one
-                    $x = $matches['x'][$key] - 1;
-                    $y = - $matches['y'][$key];
-
-                    $this->paintPixel($user, $modifier, $x, $y, $choice);
-                }
-            }
+        foreach ($lines as $line) {
+            $this->handlePotentialCommandLine($user, $line);
         }
     }
 
@@ -83,8 +55,8 @@ class PixelColourerCommand implements MessageHandlerInterface
      */
     public function operateGame(GameInterface $game)
     {
-        $width = $game->width;
-        $height = $game->height;
+        $width = $game->getWidth();
+        $height = $game->getHeight();
 
         $indexes = [];
         $colorByIndex = [];
@@ -96,6 +68,14 @@ class PixelColourerCommand implements MessageHandlerInterface
 
                 $realX = $x < 0 ? $x + $game->getWidth() : $x;
                 $realY = $y < 0 ? $y + $game->getHeight() : $y;
+
+                if ($realX >= $width || $realX < 0) {
+                    continue;
+                }
+
+                if ($realY >= $height || $realY < 0) {
+                    continue;
+                }
 
                 $index = $realY * $width + $realX;
                 $indexes[] = $index;
@@ -115,6 +95,50 @@ class PixelColourerCommand implements MessageHandlerInterface
 
             $pixel->setPainter($user);
             $pixel->setRgb($rgb->red(), $rgb->green(), $rgb->blue());
+        }
+    }
+
+    /**
+     * Handle the potential command line.
+     *
+     * @param UserInterface $user
+     * @param string $line
+     * @return void
+     */
+    protected function handlePotentialCommandLine($user, $line)
+    {
+        if (preg_match('/(paint|color|colour|pixel) *(?P<arguments>.*)/i', $line, $matches)) {
+            $this->handleArgumentsString($user, $matches['arguments']);
+        }
+    }
+
+    /**
+     * Handle the arguments string.
+     *
+     * @param UserInterface $user
+     * @param string $argumentsString
+     * @return void
+     */
+    protected function handleArgumentsString($user, $argumentsString)
+    {
+        $arguments = preg_split('/(\W+and\W+)| *, */i', $argumentsString);
+        $gatheredPixels = [];
+
+        foreach ($arguments as $argument) {
+            if (preg_match('/(?P<x>\d+) +(?P<y>\d+)( +(?P<modifier>dark|light)? *(?P<choice>[a-z0-9 #]+))?/i', $argument, $matches)) {
+                $x = $matches['x'] - 1;
+                $y = - $matches['y'];
+                $modifier = $matches['modifier'] ?? null;
+                $choice = $matches['choice'] ?? null;
+
+                $gatheredPixels[] = [$x, $y];
+
+                if ($choice) {
+                    foreach ($gatheredPixels as $gatheredPixel) {
+                        $this->paintPixel($user, $modifier, $gatheredPixel[0], $gatheredPixel[1], $choice);
+                    }
+                }
+            }
         }
     }
 
