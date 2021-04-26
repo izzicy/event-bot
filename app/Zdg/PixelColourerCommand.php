@@ -125,7 +125,24 @@ class PixelColourerCommand implements MessageHandlerInterface
         $gatheredPixels = [];
 
         foreach ($arguments as $argument) {
-            if (preg_match('/(?P<x>\d+) +(?P<y>\d+)( +(?P<modifier>dark|light)? *(?P<choice>[a-z0-9 #]+))?/i', $argument, $matches)) {
+            if (preg_match('/(?P<x1>\d+) +(?P<y1>\d+) +to +(?P<x2>\d+) +(?P<y2>\d+)( +(?P<modifier>dark|light)? *(?P<choice>[a-z0-9 #]+))?/i', $argument, $matches)) {
+                $x1 = $matches['x1'] - 1;
+                $y1 = - $matches['y1'];
+                $x2 = $matches['x2'] - 1;
+                $y2 = - $matches['y2'];
+                $modifier = $matches['modifier'] ?? null;
+                $choice = $matches['choice'] ?? null;
+
+                foreach (range($x1, $x2) as $x) {
+                    foreach (range($y1, $y2) as $y) {
+                        $gatheredPixels[] = [$x, $y];
+                    }
+                }
+
+                if ($choice) {
+                    $this->paintPixels($user, $modifier, $gatheredPixels, $choice);
+                }
+            } else if (preg_match('/(?P<x>\d+) +(?P<y>\d+)( +(?P<modifier>dark|light)? *(?P<choice>[a-z0-9 #]+))?/i', $argument, $matches)) {
                 $x = $matches['x'] - 1;
                 $y = - $matches['y'];
                 $modifier = $matches['modifier'] ?? null;
@@ -134,11 +151,25 @@ class PixelColourerCommand implements MessageHandlerInterface
                 $gatheredPixels[] = [$x, $y];
 
                 if ($choice) {
-                    foreach ($gatheredPixels as $gatheredPixel) {
-                        $this->paintPixel($user, $modifier, $gatheredPixel[0], $gatheredPixel[1], $choice);
-                    }
+                    $this->paintPixels($user, $modifier, $gatheredPixels, $choice);
                 }
             }
+        }
+    }
+
+    /**
+     * Paint the given pixels.
+     *
+     * @param UserInterface $user
+     * @param string $modifier
+     * @param array[]int[] $pixels
+     * @param string $choice
+     * @return void
+     */
+    protected function paintPixels($user, $modifier, $pixels, $choice)
+    {
+        foreach ($pixels as $pixel) {
+            $this->paintPixel($user, $modifier, $pixel[0], $pixel[1], $choice);
         }
     }
 
