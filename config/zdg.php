@@ -8,12 +8,18 @@ return [
      * The maximum number of moves allowed per user.
      */
 
-    'moves-per-user' => INF,
+    'moves-per-user' => 50,
 
     /**
      * The default size of a pixel.
      */
-    'pixel-size' => 7,
+    'pixel-size' => 10,
+
+    /**
+     * Default font path.
+     */
+
+    'font-path' => storage_path('app/mmg/font.ttf'),
 
     /**
      * All colour aliases.
