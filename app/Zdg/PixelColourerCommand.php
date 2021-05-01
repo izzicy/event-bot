@@ -205,7 +205,17 @@ class PixelColourerCommand implements MessageHandlerInterface
             }
         });
 
+        // If the user wants to override a previously painted pixel
+        // then allow that without subtracting from their pick count.
         if (
+            $colour
+            && isset($this->choices[$x][$y])
+            && $this->usersPerChoice[$x][$y]->getId() === $user->getId()
+        ) {
+            $this->choices[$x][$y] = $colour;
+
+        // Else if the pixel does not belong to this user then treat it as the following:
+        } else if (
             $colour
             && $this->picksPerUser[$user->getId()] < $maxPicks
             && empty($this->choices[$x][$y])
