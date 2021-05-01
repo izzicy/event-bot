@@ -12,9 +12,10 @@ class DrawGame
      * Draw the zdg.
      *
      * @param GameInterface $game
+     * @param bool $withGrid
      * @return resource
      */
-    public function draw(GameInterface $game)
+    public function draw(GameInterface $game, $withGrid = false)
     {
         $width = $game->getWidth();
         $height = $game->getHeight();
@@ -32,6 +33,10 @@ class DrawGame
                 $y * $pixelSize
             );
         });
+
+        if ($withGrid === false) {
+            return $canvas->getCore();
+        }
 
         foreach (range(1, $width - 1) as $x) {
             $canvas->rectangle($x * $pixelSize, 0, $x * $pixelSize, $height * $pixelSize, function ($draw) {

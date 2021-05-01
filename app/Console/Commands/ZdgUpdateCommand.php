@@ -110,6 +110,22 @@ class ZdgUpdateCommand extends Command
                 });
             },
 
+            // post the update with grid
+            function($passable, Closure $next) use ($discord, $game, $channelId) {
+                $drawer = new DrawGame();
+
+                $game->refresh();
+
+                $channel = $discord->getChannel($channelId);
+                $image = ImageManagerStatic::make($drawer->draw($game, true));
+                $path = tempnam(sys_get_temp_dir(), '') . '.png';
+                $image->save($path);
+
+                $channel->sendFile($path)->done(function() use ($next) {
+                    $next(null);
+                });
+            },
+
             new DiscordCloseMiddleware($discord),
         ];
 
