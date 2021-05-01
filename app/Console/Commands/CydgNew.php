@@ -10,14 +10,14 @@ use Discord\Discord;
 use Illuminate\Console\Command;
 use Illuminate\Pipeline\Pipeline;
 
-class ChooseYourDoorPostChoiceBoothCommand extends Command
+class CydgNew extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'choose-your-door:post-choice-booth {--channel=} {--door-count=4} {--test}';
+    protected $signature = 'cydg:new {--channel=} {--door-count=4} {--test}';
 
     /**
      * The console command description.

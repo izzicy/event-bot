@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Discord\DiscordCloseMiddleware;
 use App\Discord\OnDiscordReadyMiddleware;
-use App\Services\Choices\ChoicesResultsInterface;
 use App\Services\ChooseYourDoorGame\DiscordConnection;
 use App\Services\ChooseYourDoorGame\PhraseCreator;
 use App\Services\ChooseYourDoorGame\ResultsImageCreator;
@@ -12,17 +11,15 @@ use Closure;
 use Discord\Discord;
 use Illuminate\Console\Command;
 use Illuminate\Pipeline\Pipeline;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Lang;
 
-class ChooseYourDoorRespondCommand extends Command
+class CydgUpdate extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'choose-your-door:respond {--channel=} {--message=} {--door-count=4} {--correct-doors=2} {--test}';
+    protected $signature = 'cydg:update {--channel=} {--message=} {--door-count=4} {--correct-doors=2} {--test}';
 
     /**
      * The console command description.
