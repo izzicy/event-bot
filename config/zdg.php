@@ -8,7 +8,7 @@ return [
      * The maximum number of moves allowed per user.
      */
 
-    'moves-per-user' => 50,
+    'moves-per-user' => INF,
 
     /**
      * The default size of a pixel.

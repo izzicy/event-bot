@@ -5,7 +5,9 @@ namespace App\Console\Commands;
 use App\Discord\DiscordCloseMiddleware;
 use App\Discord\OnDiscordReadyMiddleware;
 use App\Services\Messages\Factory;
+use App\Zdg\ChoicesAggregate;
 use App\Zdg\Draw\DrawGame;
+use App\Zdg\FromImageColourerCommand;
 use App\Zdg\Models\Game;
 use App\Zdg\PixelColourerCommand;
 use Closure;
@@ -79,13 +81,16 @@ class ZdgUpdateCommand extends Command
                 try {
                     $messages = app(Factory::class)->createFromDirectResponses($discordMessages, $discord->id);
 
-                    $command = new PixelColourerCommand();
+                    $choices = new ChoicesAggregate();
+                    $pixelColourer = new PixelColourerCommand($choices);
+                    $fromImage = new FromImageColourerCommand($choices);
 
                     foreach ($messages as $message) {
-                        $command->handleMessage($message);
+                        $pixelColourer->handleMessage($message);
+                        $fromImage->handleMessage($message);
                     }
 
-                    $command->operateGame($game);
+                    $choices->operateGame($game);
 
                     $next(null);
                 }

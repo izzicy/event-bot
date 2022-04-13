@@ -3,6 +3,7 @@
 namespace App\Services\Messages\Contracts;
 
 use App\Services\Users\UserInterface;
+use ImageEmbedInterface;
 
 interface UserMessageInterface
 {
@@ -19,4 +20,11 @@ interface UserMessageInterface
      * @return string
      */
     public function getMessage();
+
+    /**
+     * Get the embeds.
+     *
+     * @return ImageEmbedInterface[]
+     */
+    public function getImageAttachments();
 }

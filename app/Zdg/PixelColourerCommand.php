@@ -4,8 +4,6 @@ namespace App\Zdg;
 
 use App\Services\Messages\Contracts\MessageHandlerInterface;
 use App\Services\Users\UserInterface;
-use App\Zdg\Contracts\GameInterface;
-use App\Zdg\Contracts\PixelInterface;
 use Spatie\Color\Exceptions\InvalidColorValue;
 use Spatie\Color\Factory;
 use Spatie\Color\Hex;
@@ -13,30 +11,26 @@ use Spatie\Color\Hsl;
 
 class PixelColourerCommand implements MessageHandlerInterface
 {
-    /**
-     * The number of picks per user.
-     *
-     * @var int[]
-     */
-    protected $picksPerUser = [];
+    /** @var ChoicesAggregate */
+    protected $choices;
 
     /**
-     * The chosen colours presented as hex.
+     * Construct a new pixel colourer.
      *
-     * @var array[]string[]
+     * @param ChoicesAggregate $choices
      */
-    protected $choices = [];
-
-    /**
-     * The users per choice.
-     *
-     * @var array[]UserInterface[]
-     */
-    protected $usersPerChoice = [];
+    public function __construct(ChoicesAggregate $choices)
+    {
+        $this->choices = $choices;
+    }
 
     /** @inheritDoc */
     public function handleMessage($message)
     {
+        if (count($message->getImageAttachments()) > 0) {
+            return;
+        }
+
         $user = $message->getUser();
         $content = $message->getMessage();
 
@@ -44,57 +38,6 @@ class PixelColourerCommand implements MessageHandlerInterface
 
         foreach ($lines as $line) {
             $this->handlePotentialCommandLine($user, $line);
-        }
-    }
-
-    /**
-     * Operate on the game instance.
-     *
-     * @param GameInterface $game
-     * @return void
-     */
-    public function operateGame(GameInterface $game)
-    {
-        $width = $game->getWidth();
-        $height = $game->getHeight();
-
-        $indexes = [];
-        $colorByIndex = [];
-        $userByIndex = [];
-
-        foreach ($this->choices as $x => $choices) {
-            foreach ($choices as $y => $choice) {
-                $user = $this->usersPerChoice[$x][$y];
-
-                $realX = $x < 0 ? $x + $game->getWidth() : $x;
-                $realY = $y < 0 ? $y + $game->getHeight() : $y;
-
-                if ($realX >= $width || $realX < 0) {
-                    continue;
-                }
-
-                if ($realY >= $height || $realY < 0) {
-                    continue;
-                }
-
-                $index = $realY * $width + $realX;
-                $indexes[] = $index;
-                $colorByIndex[$index] = $choice;
-                $userByIndex[$index] = $user;
-            }
-        }
-
-        $pixels = $game->findPixels($indexes);
-
-        foreach ($pixels as $pixel) {
-            /** @var PixelInterface $pixel */
-
-            $choice = $colorByIndex[$pixel->getIndex()];
-            $user = $userByIndex[$pixel->getIndex()];
-            $rgb = Hex::fromString($choice)->toRgb();
-
-            $pixel->setPainter($user);
-            $pixel->setRgb($rgb->red(), $rgb->green(), $rgb->blue());
         }
     }
 
@@ -185,12 +128,6 @@ class PixelColourerCommand implements MessageHandlerInterface
      */
     protected function paintPixel($user, $modifier, $x, $y, $choice)
     {
-        $maxPicks = config('zdg.moves-per-user');
-
-        if (empty($this->picksPerUser[$user->getId()])) {
-            $this->picksPerUser[$user->getId()] = 0;
-        }
-
         $normalizedChoice = preg_replace('/[^a-z0-9]/', '', strtolower($choice));
         $colour = config('zdg.colours.' . $normalizedChoice, function() use ($choice) {
             try {
@@ -205,28 +142,12 @@ class PixelColourerCommand implements MessageHandlerInterface
             }
         });
 
-        // If the user wants to override a previously painted pixel
-        // then allow that without subtracting from their pick count.
-        if (
-            $colour
-            && isset($this->choices[$x][$y])
-            && $this->usersPerChoice[$x][$y]->getId() === $user->getId()
-        ) {
-            $this->choices[$x][$y] = $colour;
-
-        // Else if the pixel does not belong to this user then treat it as the following:
-        } else if (
-            $colour
-            && $this->picksPerUser[$user->getId()] < $maxPicks
-            && empty($this->choices[$x][$y])
-        ) {
+        if ($colour) {
             if ($modifier) {
                 $colour = $this->adjustBrightness($colour, $modifier === 'dark' ? -20 : 20);
             }
 
-            $this->choices[$x][$y] = $colour;
-            $this->usersPerChoice[$x][$y] = $user;
-            $this->picksPerUser[$user->getId()] += 1;
+            $this->choices->paintPixel($user, $x, $y, $colour);
         }
     }
 

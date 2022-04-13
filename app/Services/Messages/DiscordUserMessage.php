@@ -2,9 +2,11 @@
 
 namespace App\Services\Messages;
 
+use App\Services\Messages\Attachments\ImageAttachment;
 use App\Services\Messages\Contracts\UserMessageInterface;
 use App\Services\Users\DiscordUser;
 use Discord\Parts\Channel\Message;
+use Discord\Parts\Embed\Embed;
 use Discord\Parts\User\Member;
 
 class DiscordUserMessage implements UserMessageInterface
@@ -32,5 +34,18 @@ class DiscordUserMessage implements UserMessageInterface
     public function getMessage()
     {
         return $this->message->content;
+    }
+
+    /** @inheritDoc */
+    public function getImageAttachments()
+    {
+        return collect($this->message->attachments)
+            ->filter(function($attachment) {
+                return preg_match('/^image\//i', $attachment->content_type);
+            })
+            ->map(function($image) {
+                return new ImageAttachment($image);
+            })
+            ->all();
     }
 }
