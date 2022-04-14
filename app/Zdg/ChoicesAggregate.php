@@ -30,6 +30,16 @@ class ChoicesAggregate
     protected $usersPerChoice = [];
 
     /**
+     * Whether choices exist.
+     *
+     * @return boolean
+     */
+    public function hasChoices()
+    {
+        return empty($this->choices) === false;
+    }
+
+    /**
      * Paint the given pixel with the given colour.
      *
      * @param UserInterface $user
