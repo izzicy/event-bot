@@ -16,7 +16,8 @@
         "laravel/framework": "^6.0",
         "laravel/tinker": "^1.0",
         "spatie/color": "^1.2",
-        "team-reflex/discord-php": "^5.1"
+        "team-reflex/discord-php": "^5.1",
+        "ratchet/pawl": "0.4.1 as 0.3.0"
     },
     "require-dev": {
         "facade/ignition": "^1.4",

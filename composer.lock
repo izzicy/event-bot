@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "07896065820fbd637b7f86feb29b69ea",
+    "content-hash": "2bd10262fc00da6d2bc6cf453722f2ea",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -2842,26 +2842,27 @@
         },
         {
             "name": "ratchet/pawl",
-            "version": "v0.3.5",
+            "version": "v0.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ratchetphp/Pawl.git",
-                "reference": "89ec703c76dc893484a2a0ed44b48a37d445abd5"
+                "reference": "af70198bab77a582b31169d3cc3982bed25c161f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ratchetphp/Pawl/zipball/89ec703c76dc893484a2a0ed44b48a37d445abd5",
-                "reference": "89ec703c76dc893484a2a0ed44b48a37d445abd5",
+                "url": "https://api.github.com/repos/ratchetphp/Pawl/zipball/af70198bab77a582b31169d3cc3982bed25c161f",
+                "reference": "af70198bab77a582b31169d3cc3982bed25c161f",
                 "shasum": ""
             },
             "require": {
                 "evenement/evenement": "^3.0 || ^2.0",
+                "guzzlehttp/psr7": "^2.0 || ^1.7",
                 "php": ">=5.4",
-                "ratchet/rfc6455": "^0.3",
-                "react/socket": "^1.0 || ^0.8 || ^0.7"
+                "ratchet/rfc6455": "^0.3.1",
+                "react/socket": "^1.9"
             },
             "require-dev": {
-                "phpunit/phpunit": "~4.8"
+                "phpunit/phpunit": "^9.3 || ^5.7 || ^4.8"
             },
             "suggest": {
                 "reactivex/rxphp": "~2.0"
@@ -2889,9 +2890,9 @@
             ],
             "support": {
                 "issues": "https://github.com/ratchetphp/Pawl/issues",
-                "source": "https://github.com/ratchetphp/Pawl/tree/master"
+                "source": "https://github.com/ratchetphp/Pawl/tree/v0.4.1"
             },
-            "time": "2020-07-17T15:32:47+00:00"
+            "time": "2021-12-10T14:32:34+00:00"
         },
         {
             "name": "ratchet/rfc6455",
@@ -8671,7 +8672,14 @@
             "time": "2021-03-09T10:59:23+00:00"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "package": "ratchet/pawl",
+            "version": "0.4.1.0",
+            "alias": "0.3.0",
+            "alias_normalized": "0.3.0.0"
+        }
+    ],
     "minimum-stability": "dev",
     "stability-flags": [],
     "prefer-stable": true,

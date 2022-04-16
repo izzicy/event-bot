@@ -3,6 +3,7 @@
 namespace App\Discord;
 
 use Discord\Discord;
+use Illuminate\Support\Facades\Log;
 
 abstract class DiscordSession
 {
@@ -14,47 +15,75 @@ abstract class DiscordSession
     protected $discord;
 
     /**
-     * The session options.
+     * The session factory.
      *
-     * @var array
+     * @var SessionFactory
      */
-    protected $options;
+    protected $sessionFactory;
 
     /**
-     * Construct a new discord session.
+     * Callbacks that are defined are stored here.
+     * This is done so we can unsubscribe an event listener when we want to cleanup.
+     *
+     * @var \Closure[]
+     */
+    protected $callbacks = [];
+
+    /**
+     * Pass along the given discord client instance.
      *
      * @param Discord $discord
-     * @param array $options
+     * @return void
      */
-    public function __construct($discord, $options)
+    public function withDiscord($discord)
     {
         $this->discord = $discord;
-        $this->options = $options;
     }
 
     /**
-     * Stop the discord session.
+     * Pass along the given discord client instance.
+     *
+     * @param SessionFactory $discord
+     * @return void
+     */
+    public function withSessionFactory($sessionFactory)
+    {
+        $this->sessionFactory = $sessionFactory;
+    }
+
+    /**
+     * Start the session and run the discord client.
      *
      * @return void
      */
-    public function stop()
+    public function open()
     {
-        $this->stop();
+        $this->initializing();
+        $this->initialize();
     }
 
     /**
-     * Get the value of a command option.
+     * Start only the session, assume the discord client already has started.
      *
-     * @param  string|null  $key
-     * @return string|array|bool|null
+     * @return void
      */
-    protected function option($key = null)
+    public function start()
     {
-        if (is_null($key)) {
-            return $this->options;
-        }
+        $this->initializing();
+        $this->initialized();
 
-        return $this->options[$key] ?? null;
+    }
+
+    /**
+     * Create a new discord session.
+     *
+     * @param string $sessionClass
+     * @param array $parameters
+     * @return DiscordSession
+     */
+    protected function createSession($sessionClass, $parameters = [])
+    {
+        return $this->sessionFactory->create($sessionClass, $this->discord, $parameters);
     }
 
     /**
@@ -69,35 +98,23 @@ abstract class DiscordSession
     }
 
     /**
-     * Close the discord session.
+     * Before the discord client instance has started.
      *
      * @return void
      */
-    protected function close()
+    protected function initializing()
     {
-        $this->discord->close();
-        $this->closed();
+        // no-op
     }
 
     /**
-     * The discord session has initialized.
+     * After the discord client instance has started.
      *
      * @return void
      */
     protected function initialized()
     {
-        //
-    }
-
-
-    /**
-     * The discord session is closed.
-     *
-     * @return void
-     */
-    protected function closed()
-    {
-        //
+        // no-op
     }
 
     /**
@@ -108,15 +125,19 @@ abstract class DiscordSession
      */
     protected function callback($method)
     {
-        return function() use ($method) {
-            call_user_func_array([$this, $method], func_get_args());
+        $arguments = array_slice(func_get_args(), 1);
+
+        if (isset($this->callbacks[$method])) {
+            return $this->callbacks[$method];
+        }
+
+        return $this->callbacks[$method] = function() use ($method, $arguments) {
+            try {
+                call_user_func_array([$this, $method], array_merge($arguments, func_get_args()));
+            }
+            catch (\Throwable $e) {
+                throw $e;
+            }
         };
     }
-
-    /**
-     * Start the discord session.
-     *
-     * @return void
-     */
-    abstract public function start();
 }

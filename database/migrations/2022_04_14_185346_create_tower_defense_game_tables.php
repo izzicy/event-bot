@@ -16,11 +16,13 @@ class CreateTowerDefenseGameTables extends Migration
         Schema::create('tower_defense_game', function (Blueprint $table) {
             $table->increments('id');
 
-            $table->integer('channel_id');
+            $table->string('channel_id', 127);
 
             $table->enum('state', ['WON', 'LOST', 'PLAYING']);
 
             $table->integer('base_health');
+            $table->integer('base_x');
+            $table->integer('base_y');
             $table->integer('width');
             $table->integer('height');
 
@@ -66,8 +68,8 @@ class CreateTowerDefenseGameTables extends Migration
         Schema::create('tdg_players', function (Blueprint $table) {
             $table->increments('id');
 
-            $table->integer('tdg_id');
-            $table->integer('user_id');
+            $table->integer('tdg_id')->unsigned();
+            $table->string('user_id', 127);
 
             $table->integer('money');
             $table->integer('score')->default(0);

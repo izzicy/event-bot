@@ -2,37 +2,26 @@
 
 namespace App\Console\Commands;
 
-use App\Discord\DiscordCloseMiddleware;
-use App\Discord\OnDiscordReadyMiddleware;
 use App\Discord\SessionFactory;
-use App\Services\Messages\Factory;
-use App\Zdg\ChoicesAggregate;
-use App\Zdg\Draw\DrawGame;
-use App\Zdg\FromImageColourerCommand;
-use App\Zdg\Models\Game;
-use App\Zdg\PixelColourerCommand;
-use App\Zdg\ZdgSession;
-use Closure;
+use App\TowerDefense\GameManagerSession;
 use Discord\Discord;
 use Illuminate\Console\Command;
-use Illuminate\Pipeline\Pipeline;
-use Intervention\Image\ImageManagerStatic;
 
-class ZdgProcessCommand extends Command
+class TowerDefenseProcessCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'zdg:process {game} {--channel=}';
+    protected $signature = 'tower-defense:process {channel}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Listen to the zero dollar game.';
+    protected $description = 'Listen to the tower defense game.';
 
     /**
      * Create a new command instance.
@@ -54,11 +43,12 @@ class ZdgProcessCommand extends Command
     {
         $discord = new Discord([
             'token' => config('discord.token'),
+            'logger' => app(\Psr\Log\LoggerInterface::class),
+            'httpLogger' => app(\Psr\Log\LoggerInterface::class),
         ]);
 
-        $session = $sessionFactory->create(ZdgSession::class, $discord, [
-            'channel' => $this->option('channel'),
-            'game' => $this->argument('game'),
+        $session = $sessionFactory->create(GameManagerSession::class, $discord, [
+            'channelId' => $this->argument('channel'),
         ]);
 
         $session->open();

@@ -16,20 +16,16 @@ class ZdgSession extends DiscordSession
 {
     protected $channelId;
 
-    /**
-     * @inheritdoc
-     */
-    public function start()
+    public function __construct($channel, $game)
     {
-        $channelId = $this->option('channel') ?? config('zdg.default-channel');
+        $channelId = $channel ?? config('zdg.default-channel');
 
-        $game = Game::find($this->option('game'));
+        $game = Game::find($game);
 
         $this->channelId = $channelId;
         $this->game = $game;
-
-        $this->initialize();
     }
+
 
     /**
      * @inheritdoc

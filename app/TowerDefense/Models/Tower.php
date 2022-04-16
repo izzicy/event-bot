@@ -1,6 +1,6 @@
 <?php
 
-namespace App\TowerDefense;
+namespace App\TowerDefense\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -21,4 +21,11 @@ class Tower extends Model
      * @var string
      */
     protected $table = 'tdg_towers';
+
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [];
 }

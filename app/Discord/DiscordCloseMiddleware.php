@@ -5,6 +5,9 @@ namespace App\Discord;
 use Closure;
 use Discord\Discord;
 
+/**
+ * @deprecated
+ */
 class DiscordCloseMiddleware
 {
     /**
