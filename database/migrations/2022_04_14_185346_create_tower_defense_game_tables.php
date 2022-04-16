@@ -90,6 +90,21 @@ class CreateTowerDefenseGameTables extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tower_defense_game_tables');
+        Schema::table('tdg_towers', function (Blueprint $table) {
+            $table->dropForeign(['tdg_id']);
+        });
+
+        Schema::table('tdg_antagonists', function (Blueprint $table) {
+            $table->dropForeign(['tdg_id']);
+        });
+
+        Schema::table('tdg_players', function (Blueprint $table) {
+            $table->dropForeign(['tdg_id']);
+        });
+
+        Schema::dropIfExists('tower_defense_game');
+        Schema::dropIfExists('tdg_towers');
+        Schema::dropIfExists('tdg_antagonists');
+        Schema::dropIfExists('tdg_players');
     }
 }
