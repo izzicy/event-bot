@@ -12,6 +12,13 @@ class ActionCollection
     public $antagonistAttacks = [];
 
     /**
+     * Antagonist move actions.
+     *
+     * @var AntagonistMoveAction[]
+     */
+    public $antagonistMoves = [];
+
+    /**
      * Antagonist spawn actions.
      *
      * @var AntagonistSpawnAction[]
