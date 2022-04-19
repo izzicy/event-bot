@@ -26,4 +26,11 @@ class AntagonistMoveAction
      * @var int
      */
     public $y;
+
+    /**
+     * The direction the antagonist is facing.
+     *
+     * @var string
+     */
+    public $direction;
 }

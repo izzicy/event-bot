@@ -2,6 +2,7 @@
 
 namespace App\TowerDefense\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -13,6 +14,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $base_y
  * @property int $width
  * @property int $height
+ * @property-read Collection $antagonists
+ * @property-read Collection $players
+ * @property-read Collection $towers
  */
 class Game extends Model
 {

@@ -9,6 +9,7 @@
     "license": "MIT",
     "require": {
         "php": "^7.2",
+        "blackscorp/astar": "^1.2",
         "doctrine/dbal": "^2.6",
         "fideloper/proxy": "^4.0",
         "guzzlehttp/guzzle": "^7.2",
@@ -50,7 +51,8 @@
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests/"
-        }
+        },
+        "files": [ "app/functions.php" ]
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
