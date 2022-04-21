@@ -4,7 +4,7 @@ namespace App\TowerDefense\Actions;
 
 use App\TowerDefense\Models\Antagonist;
 use App\TowerDefense\Models\Tower;
-use BlackScorp\Astar\Node;
+use App\TowerDefense\Pathfinding\PathNode;
 
 class AntagonistTargetAction
 {
@@ -32,7 +32,7 @@ class AntagonistTargetAction
     /**
      * The path towards the target.
      *
-     * @var Node[]
+     * @var PathNode[]
      */
     public $path;
 

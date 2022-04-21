@@ -9,12 +9,12 @@
     "license": "MIT",
     "require": {
         "php": "^7.2",
-        "blackscorp/astar": "^1.2",
         "doctrine/dbal": "^2.6",
         "fideloper/proxy": "^4.0",
         "guzzlehttp/guzzle": "^7.2",
         "intervention/gif": "^3.0.0-alpha.1",
         "intervention/image": "^2.5",
+        "jmgq/a-star": "^1.2",
         "laravel/framework": "^6.0",
         "laravel/tinker": "^1.0",
         "ratchet/pawl": "0.4.1 as 0.3.0",

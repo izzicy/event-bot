@@ -4,45 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "763b8408d393c5983394406643977a93",
+    "content-hash": "50c2fcaa6a0deaf62d7b34667d367c94",
     "packages": [
-        {
-            "name": "blackscorp/astar",
-            "version": "v1.2.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/BlackScorp/astar.git",
-                "reference": "9b80d6135ac31947d246cf2e33ff45d4681a6a57"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/BlackScorp/astar/zipball/9b80d6135ac31947d246cf2e33ff45d4681a6a57",
-                "reference": "9b80d6135ac31947d246cf2e33ff45d4681a6a57",
-                "shasum": ""
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "BlackScorp\\Astar\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Vitalij Mik",
-                    "email": "cccpmik+composer@gmail.com"
-                }
-            ],
-            "description": "AStar path finding implementation in php",
-            "support": {
-                "issues": "https://github.com/BlackScorp/astar/issues",
-                "source": "https://github.com/BlackScorp/astar/tree/v1.2.0"
-            },
-            "time": "2017-10-06T15:21:22+00:00"
-        },
         {
             "name": "dnoegel/php-xdg-base-dir",
             "version": "v0.1.1",
@@ -1343,6 +1306,60 @@
                 }
             ],
             "time": "2021-12-16T16:49:26+00:00"
+        },
+        {
+            "name": "jmgq/a-star",
+            "version": "v1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jmgq/php-a-star.git",
+                "reference": "152a70625dd88975cba1cfe0d270e0e87ea32b45"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jmgq/php-a-star/zipball/152a70625dd88975cba1cfe0d270e0e87ea32b45",
+                "reference": "152a70625dd88975cba1cfe0d270e0e87ea32b45",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "php-coveralls/php-coveralls": "^1.0",
+                "phpunit/phpunit": "^4.0",
+                "squizlabs/php_codesniffer": "^2.0",
+                "symfony/console": "^2.7"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "JMGQ\\AStar\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jose Gonzalez",
+                    "email": "jmgq@jmgq.es",
+                    "homepage": "https://www.jmgq.es"
+                }
+            ],
+            "description": "A* (A Star) algorithm for PHP",
+            "keywords": [
+                "Algorithm",
+                "a",
+                "a star",
+                "pathfinding",
+                "search"
+            ],
+            "support": {
+                "issues": "https://github.com/jmgq/php-a-star/issues",
+                "source": "https://github.com/jmgq/php-a-star/tree/v1.2.0"
+            },
+            "time": "2021-02-03T22:30:46+00:00"
         },
         {
             "name": "laravel/framework",

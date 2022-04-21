@@ -10,7 +10,10 @@ use App\TowerDefense\Contracts\ActionCollectionFiller;
 use App\TowerDefense\Models\Antagonist;
 use App\TowerDefense\Models\Game;
 use App\TowerDefense\Models\Tower;
+use App\TowerDefense\Pathfinding\PathfindingAStar;
+use App\TowerDefense\Pathfinding\PathNode;
 use Illuminate\Support\Arr;
+use JMGQ\AStar\AStar;
 
 class AntagonistFiller implements ActionCollectionFiller
 {
@@ -22,22 +25,13 @@ class AntagonistFiller implements ActionCollectionFiller
     protected $game;
 
     /**
-     * The grid.
-     *
-     * @var \BlackScorp\Astar\Grid
-     */
-    protected $grid;
-
-    /**
      * Construct a new filler.
      *
      * @param Game $game
-     * @param \BlackScorp\Astar\Grid $grid
      */
-    public function __construct(Game $game, \BlackScorp\Astar\Grid $grid)
+    public function __construct(Game $game)
     {
         $this->game = $game;
-        $this->grid = $grid;
     }
 
     /**
@@ -49,21 +43,17 @@ class AntagonistFiller implements ActionCollectionFiller
         $range = config('tower-defense.antagonist_base_range');
 
         foreach ($antagonists as $antagonist) {
-            $targetAction = $this->createTargetAction($this->grid, $this->game, $antagonist);
+            $pathfinder = $this->createPathFinder($this->game, $actions);
+            $targetAction = $this->createTargetAction($pathfinder, $this->game, $antagonist);
 
             if ($targetAction) {
                 $actions->antagonistTargets[] = $targetAction;
                 $distance = amsterdam_distance($antagonist->x, $antagonist->y, $targetAction->x, $targetAction->y);
 
                 if ($distance <= $range) {
-                    $attackAction = $this->createAttackAction($targetAction);
+                    $actions->antagonistAttacks[] = $this->createAttackAction($targetAction);
                 } else {
-                    $moveAction = $this->createAttackAction($targetAction);
-
-                    $previousLocation = $this->grid->getPoint($antagonist->y, $antagonist->x);
-                    $newLocation = $this->grid->getPoint($moveAction->y, $moveAction->x);
-
-                    $previousLocation->set
+                    $actions->antagonistMoves[] = $this->createAttackAction($targetAction);
                 }
             }
         }
@@ -118,20 +108,18 @@ class AntagonistFiller implements ActionCollectionFiller
     /**
      * Create the target action.
      *
-     * @param \BlackScorp\Astar\Grid $grid
+     * @param AStar $pathfinder
      * @param Game $game
      * @param Antagonist $antagonist
      * @return AntagonistTargetAction|null
      */
-    protected function createTargetAction(\BlackScorp\Astar\Grid $grid, Game $game, Antagonist $antagonist)
+    protected function createTargetAction(AStar $pathfinder, Game $game, Antagonist $antagonist)
     {
-        $astar = new \BlackScorp\Astar\Astar($grid);
         $towers = $game->towers;
-        $antagonistPoint = $grid->getPoint($antagonist->y, $antagonist->x);
+        $antagonistNode = PathNode::fromCoords($antagonist->x, $antagonist->y);
         $action = new AntagonistTargetAction;
 
         $action->targetingAntagonist = $antagonist;
-        $astar->blocked([1]);
 
         $closestTower = null;
         $closestDistanceToTower = INF;
@@ -150,12 +138,18 @@ class AntagonistFiller implements ActionCollectionFiller
         $towerPath = [];
 
         if ($closestTower) {
-            $towerPoint = $grid->getPoint($closestTower->y, $closestTower->x);
-            $towerPath = $astar->search($antagonistPoint, $towerPoint);
+            $towerPoint = PathNode::fromCoords($closestTower->x, $closestTower->y);
+            $towerPath = $pathfinder->run(
+                $antagonistNode,
+                $towerPoint
+            );
         }
 
-        $basePoint = $grid->getPoint($game->base_y, $game->base_x);
-        $basePath = $astar->search($antagonistPoint, $basePoint);
+        $basePoint = PathNode::fromCoords($game->base_x, $game->base_y);
+        $basePath = $pathfinder->run(
+            $antagonistNode,
+            $basePoint
+        );
 
         if (
             (
@@ -225,5 +219,17 @@ class AntagonistFiller implements ActionCollectionFiller
         }
 
         return $distance;
+    }
+
+    /**
+     * Create a new pathfinder.
+     *
+     * @param Game $game
+     * @param ActionCollection $action
+     * @return PathfindingAStar
+     */
+    protected function createPathFinder(Game $game, ActionCollection $actions)
+    {
+        return new PathfindingAStar($game, $actions);
     }
 }
