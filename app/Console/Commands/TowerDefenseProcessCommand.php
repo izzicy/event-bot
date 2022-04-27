@@ -43,8 +43,6 @@ class TowerDefenseProcessCommand extends Command
     {
         $discord = new Discord([
             'token' => config('discord.token'),
-            'logger' => app(\Psr\Log\LoggerInterface::class),
-            'httpLogger' => app(\Psr\Log\LoggerInterface::class),
         ]);
 
         $session = $sessionFactory->create(GameManagerSession::class, $discord, [

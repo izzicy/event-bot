@@ -94,3 +94,34 @@ if ( ! function_exists('align_to_compass')) {
         throw new Exception('No compass direction could be matches. This should not happen.');
     }
 }
+
+if ( ! function_exists('compass_to_radians')) {
+    /**
+     * Convert the compass direction to radians.
+     *
+     * @param string $direction
+     * @return void
+     */
+    function compass_to_radians($direction) {
+        switch ($direction) {
+            case COMPASS_EAST:
+                return 0;
+            case COMPASS_NORTH_EAST:
+                return -M_PI_4;
+            case COMPASS_NORTH:
+                return -M_PI_2;
+            case COMPASS_NORTH_WEST:
+                return -M_PI_2 - M_PI_4;
+            case COMPASS_WEST:
+                return M_PI;
+            case COMPASS_SOUTH_WEST:
+                return M_PI_2 + M_PI_4;
+            case COMPASS_SOUTH;
+                return M_PI_2;
+            case COMPASS_SOUTH_EAST:
+                return M_PI_4;
+            default:
+                return 0;
+        }
+    }
+}

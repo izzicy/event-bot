@@ -48,6 +48,8 @@ class GameSession extends DiscordSession
     protected function initialized()
     {
         $this->discord->on(Event::MESSAGE_CREATE, $this->callback('handleMessage'));
+
+        $this->messageInstructions();
     }
 
     /**
@@ -143,6 +145,20 @@ class GameSession extends DiscordSession
 
         return $channel->sendMessage(
             'You have been added to the game.',
+        );
+    }
+
+    /**
+     * Message the game instructions.
+     *
+     * @return void
+     */
+    protected function messageInstructions()
+    {
+        $channel = $this->discord->getChannel($this->game->channel_id);
+
+        return $channel->sendMessage(
+            '<Instructions go here>',
         );
     }
 }

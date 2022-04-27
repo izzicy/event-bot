@@ -2,8 +2,6 @@
 
 namespace App\TowerDefense\Pathfinding;
 
-use App\TowerDefense\Actions\ActionCollection;
-use App\TowerDefense\Actions\AntagonistMoveAction;
 use App\TowerDefense\Models\Game;
 use Illuminate\Database\Eloquent\Collection;
 use JMGQ\AStar\AStar;
@@ -17,13 +15,6 @@ class PathfindingAStar extends AStar
      * @var Game
      */
     protected $game;
-
-    /**
-     * The actions collection.
-     *
-     * @var ActionCollection
-     */
-    protected $actions;
 
     /**
      * The towers index.
@@ -40,34 +31,16 @@ class PathfindingAStar extends AStar
     protected $antagonistsIndex;
 
     /**
-     * An antagonists move index.
-     *
-     * @var array
-     */
-    protected $movementIndexByAntagnonist;
-
-    /**
-     * An antagonists move index.
-     *
-     * @var array
-     */
-    protected $movementIndexByLocation;
-
-    /**
      * Construct a new pathfinding a star.
      *
      * @param Game $game
-     * @param ActionCollection $actions
      */
-    public function __construct(Game $game, ActionCollection $actions)
+    public function __construct(Game $game)
     {
         $this->game = $game;
-        $this->actions = $actions;
 
         $this->towersIndex = $this->indexTowers($game->towers);
         $this->antagonistsIndex = $this->indexAntagonists($game->antagonists);
-        $this->movementIndexByAntagnonist = $this->indexMovementsByAntagonist($actions);
-        $this->movementIndexByLocation = $this->indexMovementsByLocation($actions);
     }
 
     /**
@@ -127,18 +100,6 @@ class PathfindingAStar extends AStar
                 $this->antagonistsIndex[$adjacentX][$adjacentY]
             )
         ) {
-            $antagonist = $this->antagonistsIndex[$adjacentX][$adjacentY];
-
-            if (empty($this->movementIndexByAntagnonist[$antagonist->getKey()])) {
-                return PHP_INT_MAX;
-            }
-        }
-
-        if (
-            isset(
-                $this->movementIndexByLocation[$adjacentX][$adjacentY]
-            )
-        ) {
             return PHP_INT_MAX;
         }
 
@@ -181,36 +142,6 @@ class PathfindingAStar extends AStar
     {
         return $antagonists->reduce(function($carry, $antagonist) {
             $carry[$antagonist->y][$antagonist->x] = $antagonist;
-
-            return $carry;
-        }, []);
-    }
-
-    /**
-     * Create an index for the antagonist movements.
-     *
-     * @param ActionCollection $actions
-     * @return array
-     */
-    protected function indexMovementsByAntagonist($actions)
-    {
-        return collect($actions->antagonistMoves)->reduce(function($carry, AntagonistMoveAction $action) {
-            $carry[$action->movingAntagonist->getKey()] = $action;
-
-            return $carry;
-        }, []);
-    }
-
-    /**
-     * Create an index for the antagonist movements.
-     *
-     * @param ActionCollection $actions
-     * @return array
-     */
-    protected function indexMovementsByLocation($actions)
-    {
-        return collect($actions->antagonistMoves)->reduce(function($carry, AntagonistMoveAction $action) {
-            $carry[$action->y][$action->x] = $action;
 
             return $carry;
         }, []);
