@@ -59,7 +59,7 @@ class AreaData implements EventsDirector
     public function antagonists()
     {
         return $this->game->antagonists->map(function($antagonist) {
-            return new AntagonistData($antagonist, $this->dataPerAntagonist[$antagonist->getKey()]);
+            return new AntagonistData($antagonist, $this->dataPerAntagonist[$antagonist->getKey()] ?? []);
         });
     }
 

@@ -45,7 +45,7 @@ class Game extends Model
      */
     public function antagonists()
     {
-        return $this->hasMany(Antagonist::class);
+        return $this->hasMany(Antagonist::class, 'tdg_id');
     }
 
     /**
@@ -55,7 +55,7 @@ class Game extends Model
      */
     public function players()
     {
-        return $this->hasMany(Player::class);
+        return $this->hasMany(Player::class, 'tdg_id');
     }
 
     /**
@@ -65,6 +65,6 @@ class Game extends Model
      */
     public function towers()
     {
-        return $this->hasMany(Tower::class);
+        return $this->hasMany(Tower::class, 'tdg_id');
     }
 }

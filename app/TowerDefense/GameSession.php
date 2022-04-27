@@ -6,6 +6,8 @@ use App\Discord\DiscordSession;
 use App\TowerDefense\Models\Game;
 use App\TowerDefense\Models\Player;
 use App\TowerDefense\Models\Tower;
+use App\TowerDefense\View\AreaData;
+use App\TowerDefense\View\AreaView;
 use Discord\Helpers\Deferred;
 use Discord\Parts\Channel\Message;
 use Discord\Parts\User\Member;
@@ -49,7 +51,7 @@ class GameSession extends DiscordSession
     {
         $this->discord->on(Event::MESSAGE_CREATE, $this->callback('handleMessage'));
 
-        $this->timedAdvanceGame();
+        $this->advanceGame();
 
         $this->messageInstructions();
     }
@@ -183,10 +185,15 @@ class GameSession extends DiscordSession
     {
         $this->timedAdvanceGame();
 
+        $areaData = new AreaData($this->game);
+
+        $image = app(AreaView::class)->draw($areaData);
+
         $channel = $this->discord->getChannel($this->game->channel_id);
 
-        return $channel->sendMessage(
-            'Timer',
-        );
+        $path = tempnam(sys_get_temp_dir(), '') . '.png';
+        $image->save($path);
+
+        return $channel->sendFile($path);
     }
 }

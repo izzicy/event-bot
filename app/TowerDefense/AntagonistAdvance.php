@@ -44,6 +44,16 @@ class AntagonistFiller
      */
     public function advance()
     {
+        $this->handleExistingAntagonists();
+    }
+
+    /**
+     * Handle the existing antagonists.
+     *
+     * @return void
+     */
+    protected function handleExistingAntagonists()
+    {
         $antagonists = $this->game->antagonists->sortBy('id');
 
         foreach ($antagonists as $antagonist) {
