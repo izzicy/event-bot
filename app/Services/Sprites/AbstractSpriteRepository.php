@@ -23,11 +23,6 @@ abstract class AbstractSpriteRepository
         return $this->sprites[$name][$direction] ?? null;
     }
 
-    protected function storeRotatedSprite()
-    {
-
-    }
-
     /**
      * Store a new sprite created from the image.
      *

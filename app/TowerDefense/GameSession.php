@@ -49,6 +49,8 @@ class GameSession extends DiscordSession
     {
         $this->discord->on(Event::MESSAGE_CREATE, $this->callback('handleMessage'));
 
+        $this->timedAdvanceGame();
+
         $this->messageInstructions();
     }
 
@@ -159,6 +161,32 @@ class GameSession extends DiscordSession
 
         return $channel->sendMessage(
             '<Instructions go here>',
+        );
+    }
+
+    /**
+     * Create a timed advance game.
+     *
+     * @return void
+     */
+    protected function timedAdvanceGame()
+    {
+        \React\Promise\Timer\sleep(30)->then($this->callback('advanceGame'));
+    }
+
+    /**
+     * Advance the game.
+     *
+     * @return void
+     */
+    protected function advanceGame()
+    {
+        $this->timedAdvanceGame();
+
+        $channel = $this->discord->getChannel($this->game->channel_id);
+
+        return $channel->sendMessage(
+            'Timer',
         );
     }
 }
