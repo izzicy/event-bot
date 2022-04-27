@@ -38,8 +38,7 @@ abstract class AbstractSpriteRepository
      */
     protected function storeSprite($image, $name, $direction, $x, $y, $width, $height, $rotation)
     {
-        $sprite = $image->crop($width, $height, $x, $y)->rotate($rotation)->encode('png')->save('test.png');
-        dd('test');
+        $sprite = (clone $image)->crop($width, $height, $x, $y)->rotate($rotation)->encode('png');
 
         $this->sprites[$name][$direction] = $sprite;
     }

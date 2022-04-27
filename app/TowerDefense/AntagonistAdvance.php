@@ -1,10 +1,7 @@
 <?php
 
-namespace App\TowerDefense\Actions\Fillers;
+namespace App\TowerDefense;
 
-use App\TowerDefense\Actions\ActionCollection;
-use App\TowerDefense\Actions\AntagonistAttackAction;
-use App\TowerDefense\Actions\AntagonistMoveAction;
 use App\TowerDefense\Actions\AntagonistTargetAction;
 use App\TowerDefense\Contracts\EventsDirector;
 use App\TowerDefense\Models\Antagonist;
@@ -15,7 +12,7 @@ use App\TowerDefense\Pathfinding\PathNode;
 use Illuminate\Support\Arr;
 use JMGQ\AStar\AStar;
 
-class AntagonistFiller
+class AntagonistAdvance
 {
     /**
      * The game instance.
@@ -106,7 +103,7 @@ class AntagonistFiller
 
         if (
             (
-                $closestDistanceToTower / $distanceToBase < config('tower-defense.tower_prioritize_ratio')
+                $closestDistanceToTower / max($distanceToBase, 1) < config('tower-defense.tower_prioritize_ratio')
                 || count($basePath) === 0
             ) && count($towerPath) > 0
         ) {

@@ -187,6 +187,10 @@ class GameSession extends DiscordSession
 
         $areaData = new AreaData($this->game);
 
+        $advance = new AntagonistAdvance($this->game, $areaData);
+
+        $advance->advance();
+
         $image = app(AreaView::class)->draw($areaData);
 
         $channel = $this->discord->getChannel($this->game->channel_id);

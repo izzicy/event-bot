@@ -26,7 +26,7 @@ class AreaView
         $width = $areaData->width();
         $height = $areaData->height();
 
-        $img = ImageManagerStatic::canvas($width * self::TILE_DIMENSIONS, $height * self::TILE_DIMENSIONS, '#0f0')->encode('png');
+        $img = ImageManagerStatic::canvas($width * self::TILE_DIMENSIONS, $height * self::TILE_DIMENSIONS, '#826B3B')->encode('png');
 
         foreach ($areaData->antagonists() as $antogonist) {
             $facing = $antogonist->facing() ?? COMPASS_EAST;
