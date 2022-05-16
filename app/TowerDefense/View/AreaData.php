@@ -22,6 +22,13 @@ class AreaData implements EventsDirector
     protected $dataPerAntagonist = [];
 
     /**
+     * The new data per tower.
+     *
+     * @var array
+     */
+    protected $dataPerTower = [];
+
+    /**
      * Construct a new area data.
      *
      * @param Game $game
@@ -64,6 +71,18 @@ class AreaData implements EventsDirector
     }
 
     /**
+     * Get the antagonists.
+     *
+     * @return TowerData[]
+     */
+    public function towers()
+    {
+        return $this->game->towers->map(function($tower) {
+            return new TowerData($tower, $this->dataPerTower[$tower->getKey()] ?? []);
+        });
+    }
+
+    /**
      * @inheritdoc
      */
     public function antagonistIsAttacking($antagonist, $tower = null, $isAttackingBase = false)
@@ -90,8 +109,8 @@ class AreaData implements EventsDirector
     public function antagonistHasMoved($antagonist, $prevX, $prevY)
     {
         $antagonistId = $antagonist->getKey();
-        $deltaX = $prevX - $antagonist->x;
-        $deltaY = $prevY - $antagonist->y;
+        $deltaX = $antagonist->x - $prevX;
+        $deltaY = $antagonist->y - $prevY;
 
         $this->dataPerAntagonist[$antagonistId]['isMoving'] = true;
         $this->dataPerAntagonist[$antagonistId]['facing'] = align_to_compass($deltaX, $deltaY);
@@ -102,7 +121,12 @@ class AreaData implements EventsDirector
      */
     public function towerIsAttacking($tower, $antagonist)
     {
-        // no-op
+        $towerId = $tower->getKey();
+        $deltaX = $antagonist->x - $tower->x;
+        $deltaY = $antagonist->y - $tower->y;
+
+        $this->dataPerTower[$towerId]['isAttacking'] = true;
+        $this->dataPerTower[$towerId]['facing'] = align_to_compass($deltaX, $deltaY);
     }
 
     /**
@@ -110,6 +134,6 @@ class AreaData implements EventsDirector
      */
     public function towerIsBuild($tower)
     {
-        // no-op
+        $this->dataPerTower[$tower->getKey()]['isRecentlyBuild'] = true;
     }
 }

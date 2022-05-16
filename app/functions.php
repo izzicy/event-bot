@@ -42,56 +42,33 @@ if ( ! function_exists('align_to_compass')) {
      * @return string
      */
     function align_to_compass($x, $y = null) {
+        $compass = [
+            COMPASS_EAST,
+            COMPASS_NORTH_EAST,
+            COMPASS_NORTH,
+            COMPASS_NORTH_WEST,
+            COMPASS_WEST,
+            COMPASS_SOUTH_WEST,
+            COMPASS_SOUTH,
+            COMPASS_SOUTH_EAST,
+            COMPASS_EAST,
+        ];
+
         $radians = $x;
-        $north = -M_PI_2;
-        $northEast = -M_PI_2 + M_PI_4;
-        $east = 0;
-        $southEast = M_PI_2 - M_PI_4;
-        $south = M_PI_2;
-        $southWest = M_PI_2 + M_PI_4;
-        $west = M_PI;
-        $northWest = -M_PI_2 - M_PI_4;
-
-        $m_pi_8 = M_PI_4 / 2;
-
 
         if (is_numeric($x) && is_numeric($y)) {
             $radians = atan2($y, $x);
         }
 
-        if ($radians > $north - $m_pi_8 && $radians <= $north + $m_pi_8) {
-            return COMPASS_NORTH;
+        $radians = fmod($radians, M_PI * 2);
+
+        if ($radians < 0) {
+            $radians += M_PI * 2;
         }
 
-        if ($radians > $northEast - $m_pi_8 && $radians <= $northEast + $m_pi_8) {
-            return COMPASS_NORTH_EAST;
-        }
+        $position = (int) (round($radians / M_PI_4));
 
-        if ($radians > $east - $m_pi_8 && $radians <= $east + $m_pi_8) {
-            return COMPASS_EAST;
-        }
-
-        if ($radians > $southEast - $m_pi_8 && $radians <= $southEast + $m_pi_8) {
-            return COMPASS_SOUTH_EAST;
-        }
-
-        if ($radians > $south - $m_pi_8 && $radians <= $south + $m_pi_8) {
-            return COMPASS_SOUTH;
-        }
-
-        if ($radians > $southWest - $m_pi_8 && $radians <= $southWest + $m_pi_8) {
-            return COMPASS_SOUTH_WEST;
-        }
-
-        if ($radians > $west - $m_pi_8 && $radians <= $west + $m_pi_8) {
-            return COMPASS_WEST;
-        }
-
-        if ($radians > $northWest - $m_pi_8 && $radians <= $northWest + $m_pi_8) {
-            return COMPASS_NORTH_WEST;
-        }
-
-        throw new Exception('No compass direction could be matches. This should not happen.');
+        return $compass[$position];
     }
 }
 
@@ -100,26 +77,26 @@ if ( ! function_exists('compass_to_radians')) {
      * Convert the compass direction to radians.
      *
      * @param string $direction
-     * @return void
+     * @return float
      */
     function compass_to_radians($direction) {
         switch ($direction) {
             case COMPASS_EAST:
                 return 0;
             case COMPASS_NORTH_EAST:
-                return -M_PI_4;
+                return M_PI_4;
             case COMPASS_NORTH:
-                return -M_PI_2;
+                return M_PI_2;
             case COMPASS_NORTH_WEST:
-                return -M_PI_2 - M_PI_4;
+                return M_PI_2 + M_PI_4;
             case COMPASS_WEST:
                 return M_PI;
             case COMPASS_SOUTH_WEST:
-                return M_PI_2 + M_PI_4;
+                return -M_PI_2 - M_PI_4;
             case COMPASS_SOUTH;
-                return M_PI_2;
+                return -M_PI_2;
             case COMPASS_SOUTH_EAST:
-                return M_PI_4;
+                return -M_PI_4;
             default:
                 return 0;
         }

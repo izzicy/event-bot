@@ -37,6 +37,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(Collector::class, function($app) {
             return $app[Distributer::class]->createCollector();
         });
+
+        $this->app->singleton(\App\Contracts\Sprites\SpriteBuilderFactory::class, \App\Services\Sprites\SpriteBuilderFactory::class);
     }
 
     /**

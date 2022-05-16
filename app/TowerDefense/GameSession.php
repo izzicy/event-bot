@@ -191,12 +191,9 @@ class GameSession extends DiscordSession
 
         $advance->advance();
 
-        $image = app(AreaView::class)->draw($areaData);
+        $path = app(AreaView::class)->draw($areaData);
 
         $channel = $this->discord->getChannel($this->game->channel_id);
-
-        $path = tempnam(sys_get_temp_dir(), '') . '.png';
-        $image->save($path);
 
         return $channel->sendFile($path);
     }
